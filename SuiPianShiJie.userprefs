@@ -1,9 +1,8 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\SpriteChangePixel.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\GameStart.cs">
     <Files>
-      <File FileName="Assets\Script\GameStart.cs" Line="12" Column="22" />
-      <File FileName="Assets\Script\SpriteChangePixel.cs" Line="15" Column="38" />
+      <File FileName="Assets\Script\GameStart.cs" Line="17" Column="23" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
