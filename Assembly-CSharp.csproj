@@ -38,20 +38,34 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
-      <HintPath>E:/unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+      <HintPath>G:/unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEditor">
-      <HintPath>E:/unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+      <HintPath>G:/unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Script\ButtonEvent.cs" />
+     <Compile Include="Assets\Script\CameraFlow.cs" />
+     <Compile Include="Assets\Script\DontMove.cs" />
+     <Compile Include="Assets\Script\GameEventScript\FightEvent.cs" />
+     <Compile Include="Assets\Script\GameEventScript\GameEvent.cs" />
+     <Compile Include="Assets\Script\GameEventScript\TalkEvent.cs" />
+     <Compile Include="Assets\Script\GameNpc.cs" />
      <Compile Include="Assets\Script\GameStart.cs" />
+     <Compile Include="Assets\Script\GoBack.cs" />
+     <Compile Include="Assets\Script\MainGame.cs" />
+     <Compile Include="Assets\Script\Move.cs" />
+     <Compile Include="Assets\Script\NpcMove.cs" />
      <Compile Include="Assets\Script\SpriteChangePixel.cs" />
+     <Compile Include="Assets\Script\TextChangeColor.cs" />
+     <Compile Include="Assets\Script\TextEvent.cs" />
+     <Compile Include="Assets\Script\XuanXiangEvent.cs" />
  <Reference Include="UnityEngine.UI">
- <HintPath>E:/unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
+ <HintPath>G:/unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.Networking">
- <HintPath>E:/unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
+ <HintPath>G:/unity/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

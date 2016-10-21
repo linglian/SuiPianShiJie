@@ -8,7 +8,7 @@ public class GameStart : MonoBehaviour {
 	Text text;
 	// Use this for initialization
 	void Start () {
-		gameCanvas = this.transform.Find ("GameGraphics").transform.Find("GameCanvas").GetComponent<Canvas> ();
+		gameCanvas = this.transform.Find ("GameGraphics").transform.Find("UICanvas").GetComponent<Canvas> ();
 		gameCanvas.gameObject.SetActive (false);
 		gameCamera = this.transform.Find ("GameCamera").GetComponent<Camera> ();
 		gameCamera.gameObject.SetActive (false);
@@ -20,6 +20,7 @@ public class GameStart : MonoBehaviour {
 		gameCanvas.gameObject.SetActive (true);
 		gameCamera.gameObject.SetActive (true);
 		text.gameObject.SetActive (false);
+		Destroy (this);
 	}
 	// Update is called once per frame
 	void Update () {

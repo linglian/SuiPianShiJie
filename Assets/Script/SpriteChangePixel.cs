@@ -16,5 +16,6 @@ public class SpriteChangePixel : MonoBehaviour {
 		Vector3 pos = transform.lossyScale;
 		pos.x /= ooW;
 		transform.localScale = pos;
+		Destroy (this);
 	}
 }

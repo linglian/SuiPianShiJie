@@ -1,8 +1,14 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\GameStart.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Script\XuanXiangEvent.cs">
     <Files>
-      <File FileName="Assets\Script\GameStart.cs" Line="17" Column="23" />
+      <File FileName="Assets\Script\TextEvent.cs" Line="22" Column="14" />
+      <File FileName="Assets\Script\TextChangeColor.cs" Line="39" Column="3" />
+      <File FileName="Assets\Script\GameEventScript\TalkEvent.cs" Line="9" Column="34" />
+      <File FileName="Assets\Script\GameEventScript\FightEvent.cs" Line="7" Column="17" />
+      <File FileName="Assets\Script\GameEventScript\GameEvent.cs" Line="22" Column="27" />
+      <File FileName="Assets\Script\ButtonEvent.cs" Line="9" Column="23" />
+      <File FileName="Assets\Script\XuanXiangEvent.cs" Line="14" Column="25" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
