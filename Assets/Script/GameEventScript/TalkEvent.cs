@@ -4,9 +4,11 @@ using System.Collections;
 
 public class TalkEvent : GameEvent {
 	void Start(){
-		this.text = "交谈";
+		this.buttonText = "交谈";
+		this.conText = "小伙子\n找我有什么事么！";
 	}
 	override public void runEvent(){
-		setNotice ("小伙子，找我有什么事么", 2.5f, true);
+		//setNotice ("小伙子，找我有什么事么", 2.5f, true);
+		setText(conText,this.gameObject);
 	}
 }

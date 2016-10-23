@@ -6,13 +6,15 @@ public class MainGame : MonoBehaviour {
 	
 	//地图相关
 	public GameObject floor;
-	public GameObject XuanXiang;
 	public int Width = 50;
 	public int Height = 50;
 
-	//选项相关
+	//虚拟按键选项相关
+	public GameObject xuanXiang;
 	private LinkedList<GameObject> buttonList;
 	private int choseXuanXiang;//当前选择的选项,默认为0
+	private int lastChoseXuanXiang;//上一个YES选择的选项，双击则放大对话框
+	private float xuanXiangTime;
 
 	//移动相关
 	public GameObject npc;
@@ -20,6 +22,10 @@ public class MainGame : MonoBehaviour {
 	private Move move;
 	private float dur = 0.0f;
 	private int mode = 0;
+
+	//文本相关
+	public GameObject textKuang;
+	private TextEvent textEvent;
 
 	//静态常量
 	public const int MODE_MOVE = 0;
@@ -58,6 +64,10 @@ public class MainGame : MonoBehaviour {
 		//初始化移动相关
 		ani = npc.transform.GetComponent<Animator> ();
 		move =npc.transform.GetComponent<Move> ();
+
+		//文本相关
+		textEvent = GameObject.Find ("Game").transform.Find ("GameGraphics").transform.Find ("NoticeCanvas").transform.Find ("Notice").transform.GetComponent<TextEvent> ();
+
 	}
 
 	//更新函数
@@ -75,6 +85,7 @@ public class MainGame : MonoBehaviour {
 			}
 		}
 		*/
+		xuanXiangTime += Time.fixedDeltaTime;
 	}
 
 
@@ -115,7 +126,11 @@ public class MainGame : MonoBehaviour {
 			break;
 		case MODE_XUANXIANG:
 			if (choseXuanXiang != 0) {
-				buttonList.get (--choseXuanXiang).GetComponent<Button>().Select ();
+				GameObject obj = buttonList.get (choseXuanXiang);
+				if (!obj.Equals (default(GameObject)))
+					buttonList.get (--choseXuanXiang).GetComponent<Button> ().Select ();
+				else
+					backMove ();
 			}
 			break;
 		}
@@ -129,7 +144,11 @@ public class MainGame : MonoBehaviour {
 			break;
 		case MODE_XUANXIANG:
 			if (choseXuanXiang != buttonList.count) {
-				buttonList.get (++choseXuanXiang).GetComponent<Button>().Select ();
+				GameObject obj = buttonList.get (choseXuanXiang);
+				if (!obj.Equals (default(GameObject)))
+					buttonList.get (++choseXuanXiang).GetComponent<Button> ().Select ();
+				else
+					backMove ();
 			}
 			break;
 		}
@@ -161,12 +180,29 @@ public class MainGame : MonoBehaviour {
 
 	//YES按键的事件
 	private void KeyYesEvent(){
+		GameObject obj;
 		switch(this.mode){
 		case MODE_MOVE:
 			break;
 		case MODE_XUANXIANG:
-			buttonList.get (choseXuanXiang).GetComponent<XuanXiangEvent> ().OnClickListener ();
-			buttonList.get (choseXuanXiang).GetComponent<Button> ().Select ();
+			if (xuanXiangTime <= 1f) {
+				textEvent.setNotice ("你点的太快了！", 0.75f, Color.black);
+				backMove ();
+			}else if (lastChoseXuanXiang != choseXuanXiang) {
+				lastChoseXuanXiang = choseXuanXiang;
+				obj = buttonList.get (choseXuanXiang);
+				if (!obj.Equals( default(GameObject))) {
+					obj.GetComponent<XuanXiangEvent> ().OnClickListener ();
+					obj.GetComponent<Button> ().Select ();
+				}
+			} else {
+				obj = buttonList.get (choseXuanXiang);
+				if (!obj.Equals( default(GameObject))) {
+					textEvent.setNotice(obj.GetComponent<XuanXiangEvent> ().getGameEvent().conText,2.5f,false);
+				}
+				backMove ();
+			}
+			xuanXiangTime = 0;
 			break;
 		}
 	}
@@ -187,11 +223,33 @@ public class MainGame : MonoBehaviour {
 	 *
 	 *
 	 ************************/
+
 	//按键接口
 	public void backMove(){
 		destroyButton ();
 		this.mode = MODE_MOVE;
 	}
+
+	//Button接口
+	public void keyDownButton(GameObject gameObj){
+		if (xuanXiangTime <= 1f) {
+			textEvent.setNotice ("你点的太快了！", 0.75f, Color.black);
+			backMove ();
+		} else {
+			choseXuanXiang = buttonList.find (gameObj);
+			if (lastChoseXuanXiang != choseXuanXiang) {
+				lastChoseXuanXiang = choseXuanXiang;
+			} else {
+				GameObject obj = buttonList.get (choseXuanXiang);
+				if (!obj.Equals( default(GameObject))) {
+					textEvent.setNotice(obj.GetComponent<XuanXiangEvent> ().getGameEvent().conText,2.5f,false);
+				}
+				backMove ();
+			}
+		}
+		xuanXiangTime = 0;
+	}
+	//虚拟按键接口
 	public void setKeyDown(int key){
 		switch(key){
 		case KEY_UP:
@@ -223,7 +281,7 @@ public class MainGame : MonoBehaviour {
 		destroyButton ();
 		for (int i = 0; i < gameEvent.Length; i++) {
 			pos = Vector3.zero;
-			obj = (GameObject)Instantiate (XuanXiang, pos, Quaternion.identity);
+			obj = (GameObject)Instantiate (xuanXiang, pos, Quaternion.identity);
 			obj.transform.SetParent (this.transform.Find ("GameGraphics").transform.Find ("UICanvas").transform.Find ("TextFrame").transform);
 			RectTransform rectRra = obj.GetComponent<RectTransform> ();
 			pos = Vector3.zero;
@@ -233,7 +291,7 @@ public class MainGame : MonoBehaviour {
 			rectRra.anchoredPosition3D = pos;
 			rectRra.localScale = Vector3.one;	
 			Text text = obj.GetComponentInChildren<Text> ();
-			text.text = (i+1)+","+gameEvent[i].text;
+			text.text = (i+1)+","+gameEvent[i].buttonText;
 			xxEvent = obj.GetComponent<XuanXiangEvent> ();
 			xxEvent.setGameEvent (gameEvent [i]);
 			buttonList.add(obj);
@@ -241,8 +299,34 @@ public class MainGame : MonoBehaviour {
 		this.mode = MODE_XUANXIANG;
 		buttonList.get (0).GetComponent<Button> ().Select ();
 		choseXuanXiang = 0;
+		lastChoseXuanXiang = -1;
+	}
+	//放置文本框，独立于游戏世界
+	public void setText(string str,GameObject gameObject){
+		setText (str, gameObject.transform.position.x,  gameObject.transform.position.y+2f);
+	}
+	//放置文本框，独立于游戏世界
+	public void setText(string str,float posX,float posY){
+		GameObject obj;
+		Vector3 pos;
+		pos = Vector3.zero;
+		obj = (GameObject)Instantiate (textKuang, pos, Quaternion.identity);
+		obj.transform.SetParent (this.transform.Find ("TextCanvas").transform);
+		RectTransform rectRra = obj.GetComponent<RectTransform> ();
+		pos = Vector3.zero;
+		pos.x = posX;
+		pos.y = posY;
+		pos.z = 0f;
+		rectRra.anchoredPosition3D = pos;
+		Text text = obj.GetComponentInChildren<Text> ();
+		text.text = str;
 	}
 
+	/***************
+	 * 封装函数
+	 * 
+	 * 
+	 ***************/
 	public void setMode(int mode){
 		this.mode = mode;
 	}

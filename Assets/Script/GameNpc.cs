@@ -26,7 +26,7 @@ public class GameNpc : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		hpVector.x = (10f/this.transform.localScale.x)*hp / maxHp;
+		hpVector.x = (10f/this.transform.localScale.x)*(hp*0.7f+mp*0.3f) / maxHp;
 		obj.transform.localScale = hpVector;
 	}
 }

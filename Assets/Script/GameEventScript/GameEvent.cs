@@ -2,11 +2,20 @@
 using System.Collections;
 
 public class GameEvent : MonoBehaviour {
-	public string text;
+	public string buttonText;//显示内容
+	public string conText;//文本内容
 	protected TextEvent notice;
+	protected MainGame mainGame;
 	public virtual void runEvent(){
 		
 	}
+	protected void setText(string str,GameObject gameObj){
+		if (mainGame == null) {
+			mainGame = GameObject.Find ("Game").GetComponent<MainGame> ();
+		}
+		mainGame.setText (str,gameObj);
+	}
+
 	protected void setNotice(string str,float time,bool isChangeColor){
 		if (notice == null) {
 			notice = GameObject.Find ("Game").transform.Find ("GameGraphics").transform.Find ("NoticeCanvas").transform.Find ("Notice").transform.GetComponent<TextEvent> ();

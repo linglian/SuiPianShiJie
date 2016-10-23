@@ -10,8 +10,22 @@ public class LinkedList<DataType>
 		count = 0;
 	}
 
+	public int find(DataType node){
+		Node<DataType> temp = head;
+		int n = 0;
+		while (temp!=null) {
+			if (temp.data.Equals(node)) {
+				return n;
+			}
+			temp = temp.next;
+			n++;
+		}
+		return -1;
+	}
 	public DataType pop(){
 		Node<DataType> temp = head;
+		if(head==null)
+			return default(DataType);
 		head = head.next;
 		count--;
 		return temp.data;
@@ -34,7 +48,10 @@ public class LinkedList<DataType>
 		while (n != index&&temp.next!=null) {
 			temp = temp.next;
 		}
-		return temp.data;
+		if (temp != null)
+			return temp.data;
+		else
+			return default(DataType);
 	}
 
 	class Node<NodeDataType>{
