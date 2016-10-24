@@ -5,6 +5,7 @@ using System.Collections;
 public class GameStart : MonoBehaviour {
 	Canvas gameCanvas;
 	Camera gameCamera;
+	Camera fightCamera;
 	Text text;
 	// Use this for initialization
 	void Start () {
@@ -12,6 +13,8 @@ public class GameStart : MonoBehaviour {
 		gameCanvas.gameObject.SetActive (false);
 		gameCamera = this.transform.Find ("GameCamera").GetComponent<Camera> ();
 		gameCamera.gameObject.SetActive (false);
+		fightCamera = this.transform.Find("GameFight").transform.Find ("FightCamera").GetComponent<Camera> ();
+		fightCamera.gameObject.SetActive (false);
 		text = this.transform.Find ("GameGraphics").transform.Find ("NoticeCanvas").transform.Find("Notice").GetComponent<Text> ();
 		text.gameObject.SetActive (true);
 		text.text = "任意键开始";
@@ -19,6 +22,7 @@ public class GameStart : MonoBehaviour {
 	void gameStart(){
 		gameCanvas.gameObject.SetActive (true);
 		gameCamera.gameObject.SetActive (true);
+		fightCamera.gameObject.SetActive (false);
 		text.gameObject.SetActive (false);
 		Destroy (this);
 	}

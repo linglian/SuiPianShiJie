@@ -3,7 +3,10 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class MainGame : MonoBehaviour {
-	
+	//摄像头相关
+	Camera gameCamera;
+	Camera fightCamera;
+
 	//地图相关
 	public GameObject floor;
 	public int Width = 50;
@@ -67,6 +70,10 @@ public class MainGame : MonoBehaviour {
 
 		//文本相关
 		textEvent = GameObject.Find ("Game").transform.Find ("GameGraphics").transform.Find ("NoticeCanvas").transform.Find ("Notice").transform.GetComponent<TextEvent> ();
+			
+		//摄像头相关
+		gameCamera = this.transform.Find ("GameCamera").GetComponent<Camera> ();
+		fightCamera = this.transform.Find("GameFight").transform.Find ("FightCamera").GetComponent<Camera> ();
 
 	}
 
@@ -185,24 +192,11 @@ public class MainGame : MonoBehaviour {
 		case MODE_MOVE:
 			break;
 		case MODE_XUANXIANG:
-			if (xuanXiangTime <= 1f) {
-				textEvent.setNotice ("你点的太快了！", 0.75f, Color.black);
-				backMove ();
-			}else if (lastChoseXuanXiang != choseXuanXiang) {
-				lastChoseXuanXiang = choseXuanXiang;
-				obj = buttonList.get (choseXuanXiang);
-				if (!obj.Equals( default(GameObject))) {
-					obj.GetComponent<XuanXiangEvent> ().OnClickListener ();
-					obj.GetComponent<Button> ().Select ();
-				}
-			} else {
-				obj = buttonList.get (choseXuanXiang);
-				if (!obj.Equals( default(GameObject))) {
-					textEvent.setNotice(obj.GetComponent<XuanXiangEvent> ().getGameEvent().conText,2.5f,false);
-				}
-				backMove ();
+			obj = buttonList.get (choseXuanXiang);
+			if (!obj.Equals( default(GameObject))) {
+				obj.GetComponent<XuanXiangEvent> ().OnClickListener ();
+				obj.GetComponent<Button> ().Select ();
 			}
-			xuanXiangTime = 0;
 			break;
 		}
 	}
@@ -219,7 +213,7 @@ public class MainGame : MonoBehaviour {
 	}
 
 	/************************
-	 *public的接口
+	 *接口
 	 *
 	 *
 	 ************************/
@@ -232,11 +226,11 @@ public class MainGame : MonoBehaviour {
 
 	//Button接口
 	public void keyDownButton(GameObject gameObj){
-		if (xuanXiangTime <= 1f) {
+		choseXuanXiang = buttonList.find (gameObj);
+		if (xuanXiangTime <= 0.2f&&lastChoseXuanXiang != choseXuanXiang) {
 			textEvent.setNotice ("你点的太快了！", 0.75f, Color.black);
 			backMove ();
 		} else {
-			choseXuanXiang = buttonList.find (gameObj);
 			if (lastChoseXuanXiang != choseXuanXiang) {
 				lastChoseXuanXiang = choseXuanXiang;
 			} else {
@@ -322,11 +316,15 @@ public class MainGame : MonoBehaviour {
 		text.text = str;
 	}
 
+	public void startFight(GameObject attackNpc){
+		
+	}
 	/***************
 	 * 封装函数
 	 * 
 	 * 
 	 ***************/
+
 	public void setMode(int mode){
 		this.mode = mode;
 	}
