@@ -30,6 +30,9 @@ public class MainGame : MonoBehaviour {
 	public GameObject textKuang;
 	private TextEvent textEvent;
 
+    //战斗相关
+    private GameNpc attackNpc;
+
 	//静态常量
 	public const int MODE_MOVE = 0;
 	public const int MODE_FIGHT = 1;
@@ -295,11 +298,11 @@ public class MainGame : MonoBehaviour {
 		choseXuanXiang = 0;
 		lastChoseXuanXiang = -1;
 	}
-	//放置文本框，独立于游戏世界
+	//放置文本框，独立于游戏世界-基于gameObject
 	public void setText(string str,GameObject gameObject){
 		setText (str, gameObject.transform.position.x,  gameObject.transform.position.y+2f);
 	}
-	//放置文本框，独立于游戏世界
+	//放置文本框，独立于游戏世界-基于x,y
 	public void setText(string str,float posX,float posY){
 		GameObject obj;
 		Vector3 pos;
@@ -316,9 +319,12 @@ public class MainGame : MonoBehaviour {
 		text.text = str;
 	}
 
-	public void startFight(GameObject attackNpc){
-		
+	public void startFight(GameNpc attackNpc){
+		this.fightCamera.gameObject.SetActive (true);
+		this.gameCamera.gameObject.SetActive (false);
+        this.attackNpc = attackNpc;
 	}
+
 	/***************
 	 * 封装函数
 	 * 
