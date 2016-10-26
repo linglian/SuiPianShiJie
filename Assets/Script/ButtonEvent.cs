@@ -6,7 +6,7 @@ public class ButtonEvent : MonoBehaviour {
 	MainGame mainGame;
 	// Use this for initialization
 	void Start () {
-		gameEvent = this.GetComponents<GameEvent> ();
+		gameEvent = this.GetComponents<TalkEvent> ();
 		mainGame = GameObject.Find ("Game").GetComponent<MainGame> ();
 	}
 

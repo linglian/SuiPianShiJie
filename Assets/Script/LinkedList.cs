@@ -45,6 +45,9 @@ public class LinkedList<DataType>
 	public DataType get(int index){
 		Node<DataType> temp = head;
 		int n = 0;
+        if (head == null) {
+            return default(DataType);
+        }
 		while (n != index&&temp.next!=null) {
 			temp = temp.next;
 		}

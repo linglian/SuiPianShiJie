@@ -1,6 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*******************
+ *在这里规定，此处所有的数据成员除了在MainGame类里有set和get权限，其他不得使用set
+ *为了配合Unity方便调属性和游戏速度，不使用封装函数
+ *
+ *******************/
 public class GameNpc : MonoBehaviour {
 	//生命显示相关
 	public GameObject statusHp;
@@ -30,7 +35,7 @@ public class GameNpc : MonoBehaviour {
 	public int minjie = 0;//敏捷
 	public int zhili = 0;//智力
 	public int tizhi = 0;//体质
-	public float norFightSpeed = 0.65f;//基础攻击速度
+	public float norFightSpeed = 2.5f;//基础攻击速度
 	public float fightSpeedAmp = 0f;//攻击速度加成
 
 	//特殊属性
@@ -78,13 +83,13 @@ public class GameNpc : MonoBehaviour {
 		obj.transform.localScale = hpVector;
 	}
 
-	/************************
-	 *接口
-	 *
-	 *
-	 ************************/
+    /************************
+     *对外开放的接口
+     *
+     *
+     ************************/
 
-	//一般攻击
+    //一般攻击
 	public void normalAttack(GameNpc npc){
 		npc.hp-= getPhysicsRealAttack(this,npc);
 	}
