@@ -13,7 +13,11 @@ public class FightEvent : GameEvent {
      ******************************/
     protected void normalAttack() {
         if (selectEnemyNpc() && selectMyNpc()) {
-            myNpc.normalAttack(enemyNpc);
+            if (myNpc.isCanFight) {
+                myNpc.isCanFight = false;
+                myNpc.speedTime = 0;
+                myNpc.normalAttack(enemyNpc);
+            }
         }
     }
     

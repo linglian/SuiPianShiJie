@@ -38,13 +38,9 @@ public class MainGame : MonoBehaviour {
     private GameObject myHp;
     private GameObject myMp;
     private GameObject mySpeed;
-    private float mySpeedTime;
-    private bool myIsCanFight;
     private GameObject enemyHp;
     private GameObject enemyMp;
     private GameObject enemySpeed;
-    private float enemySpeedTime;
-    private bool enemyIsCanFight;
 
     //静态常量
     public const int MODE_MOVE = 0;
@@ -182,12 +178,28 @@ public class MainGame : MonoBehaviour {
     //开始战斗-进入战斗后不可使用backMove()
     public void startFight(GameNpc enemyNpc) {
         //初始化战斗信息
-        this.mySpeedTime = 0;
-        this.enemySpeedTime = 0;
-        this.myIsCanFight = false;
-        this.enemyIsCanFight = false;
+        if (enemyNpc.isNpc) {
+            enemyNpc.hp = enemyNpc.maxHp;
+            enemyNpc.mp = enemyNpc.maxMp;
+        }
+        enemyNpc.isCanFight = false;
+        enemyNpc.speedTime = 0;
+        myNpc.isCanFight = false;
+        myNpc.speedTime = 0;
         this.enemyNpc = enemyNpc;
         changeMode(MainGame.MODE_FIGHT);
+    }
+
+    //结束战斗-进入战斗后不可使用backMove()
+    public void endFight() {
+        //初始化战斗信息
+        destroyButton();
+        enemyNpc.isCanFight = false;
+        enemyNpc.speedTime = 0;
+        myNpc.isCanFight = false;
+        myNpc.speedTime = 0;
+        this.enemyNpc = null;
+        changeMode(MainGame.MODE_MOVE);
     }
 
     //获取战斗双方
@@ -270,33 +282,37 @@ public class MainGame : MonoBehaviour {
         */
         xuanXiangTime += Time.fixedDeltaTime;
         if (this.mode == MainGame.MODE_FIGHT) {
-            if (!this.myIsCanFight) {
-                this.mySpeedTime += Time.fixedDeltaTime;
-                if (this.mySpeedTime >= (this.myNpc.norFightSpeed * (1f + this.myNpc.fightSpeedAmp))) {
-                    this.mySpeedTime = (this.myNpc.norFightSpeed * (1f + this.myNpc.fightSpeedAmp));
-                    myIsCanFight = true;
+            if (!this. myNpc.isCanFight) {
+                myNpc.speedTime += Time.fixedDeltaTime;
+                if ( myNpc.speedTime>= (this.myNpc.norFightSpeed * (1f + this.myNpc.fightSpeedAmp))) {
+                     myNpc.speedTime = (this.myNpc.norFightSpeed * (1f + this.myNpc.fightSpeedAmp));
+                     myNpc.isCanFight = true;
                 }
             }
-            if (!this.enemyIsCanFight) {
-                this.enemySpeedTime += Time.fixedDeltaTime;
-                if (this.enemySpeedTime >= (this.enemyNpc.norFightSpeed * (1f + this.enemyNpc.fightSpeedAmp))) {
-                    this.enemySpeedTime = (this.enemyNpc.norFightSpeed * (1f + this.enemyNpc.fightSpeedAmp));
-                    enemyIsCanFight = true;
+            if (!enemyNpc.isCanFight) {
+                enemyNpc.speedTime += Time.fixedDeltaTime;
+                if (enemyNpc.speedTime >= (this.enemyNpc.norFightSpeed * (1f + this.enemyNpc.fightSpeedAmp))) {
+                    enemyNpc.speedTime = (this.enemyNpc.norFightSpeed * (1f + this.enemyNpc.fightSpeedAmp));
+                    enemyNpc.isCanFight = true;
                 }
             }
-            updateNpcStatus();
+            if (updateNpcStatus()!=0) {
+                endFight();
+            }
         }
     }
 
     //更新战斗时双方的信息
-    private void updateNpcStatus() {
+    private int updateNpcStatus() {
         Vector3 scale = Vector3.one;
+        int someoneIsDied = 0;//0为无，1为myNpc，2为enemyNpc;
         //更新敌人
         float mHp;
         if (this.myNpc.hp > 0f) {
             mHp = this.myNpc.hp / this.myNpc.maxHp;
         } else {
             mHp = 0f;
+            someoneIsDied = 1;
         }
         float mMp;
         if (this.myNpc.mp > 0f) {
@@ -305,7 +321,7 @@ public class MainGame : MonoBehaviour {
             mMp = 0f;
         }
         mMp = this.myNpc.mp / this.myNpc.maxMp;
-        float mSpeed = this.mySpeedTime / (this.myNpc.norFightSpeed * (1f + this.myNpc.fightSpeedAmp));
+        float mSpeed = myNpc.speedTime / (this.myNpc.norFightSpeed * (1f + this.myNpc.fightSpeedAmp));
         scale.x = 1f * mHp;
         this.myHp.transform.localScale = scale;
         scale.x = 1f * mMp;
@@ -318,6 +334,7 @@ public class MainGame : MonoBehaviour {
             eHp = this.enemyNpc.hp / this.enemyNpc.maxHp;
         } else {
             eHp = 0f;
+            someoneIsDied = 2;
         }
         float eMp;
         if (this.enemyNpc.mp > 0f) {
@@ -325,13 +342,14 @@ public class MainGame : MonoBehaviour {
         } else {
             eMp = 0f;
         }
-        float eSpeed = this.enemySpeedTime / (this.enemyNpc.norFightSpeed * (1f + this.enemyNpc.fightSpeedAmp));//注意，norFightSpeed不得为0
+        float eSpeed = enemyNpc.speedTime / (this.enemyNpc.norFightSpeed * (1f + this.enemyNpc.fightSpeedAmp));//注意，norFightSpeed不得为0
         scale.x = 1f * eHp;
         this.enemyHp.transform.localScale = scale;
         scale.x = 1f * eMp;
         this.enemyMp.transform.localScale = scale;
         scale.x = 1f * eSpeed;
         this.enemySpeed.transform.localScale = scale;
+        return someoneIsDied;
     }
 
     //转换模式-该模式转换具有强制性，一般情况下还是使用back系列函数来返回
@@ -341,12 +359,22 @@ public class MainGame : MonoBehaviour {
             case MainGame.MODE_DUIHUA:
                 break;
             case MainGame.MODE_FIGHT:
-                this.mode = MainGame.MODE_FIGHT;
+                switch (this.mode) {
+                    case MODE_MOVE:
+                        this.gameCamera.gameObject.SetActive(false);
+                        break;
+                }
                 this.fightCamera.gameObject.SetActive(true);
-                this.gameCamera.gameObject.SetActive(false);
                 this.setButton(npc.GetComponents<FightEvent>());
+                this.mode = MainGame.MODE_FIGHT;
                 break;
             case MainGame.MODE_MOVE:
+                switch (this.mode) {
+                    case MODE_FIGHT:
+                        this.fightCamera.gameObject.SetActive(false);
+                        break;
+                }
+                this.gameCamera.gameObject.SetActive(true);
                 this.mode = MainGame.MODE_MOVE;
                 break;
             case MainGame.MODE_XUANXIANG:
@@ -396,13 +424,14 @@ public class MainGame : MonoBehaviour {
             case MODE_MOVE:
                 moveNpc(Move.MOVEMODE_UP);
                 break;
+            case MODE_FIGHT:
             case MODE_XUANXIANG:
+                GameObject obj = buttonList.get(choseXuanXiang);
                 if (choseXuanXiang != 0) {
-                    GameObject obj = buttonList.get(choseXuanXiang);
-                    if (!obj.Equals(default(GameObject)))
+                    if (obj!=null&&!obj.Equals(default(GameObject)))
                         buttonList.get(--choseXuanXiang).GetComponent<Button>().Select();
-                    else
-                        backMove();
+                } else {
+                    buttonList.get(choseXuanXiang).GetComponent<Button>().Select();
                 }
                 break;
         }
@@ -414,13 +443,14 @@ public class MainGame : MonoBehaviour {
             case MODE_MOVE:
                 moveNpc(Move.MOVEMODE_DOWN);
                 break;
+            case MODE_FIGHT:
             case MODE_XUANXIANG:
+                GameObject obj = buttonList.get(choseXuanXiang);
                 if (choseXuanXiang != buttonList.count) {
-                    GameObject obj = buttonList.get(choseXuanXiang);
-                    if (!obj.Equals(default(GameObject)))
+                    if (obj != null && !obj.Equals(default(GameObject)))
                         buttonList.get(++choseXuanXiang).GetComponent<Button>().Select();
-                    else
-                        backMove();
+                } else {
+                    buttonList.get(choseXuanXiang).GetComponent<Button>().Select();
                 }
                 break;
         }
@@ -435,6 +465,8 @@ public class MainGame : MonoBehaviour {
             case MODE_XUANXIANG:
                 backMove();
                 break;
+            case MODE_FIGHT:
+                break;
         }
     }
 
@@ -447,6 +479,8 @@ public class MainGame : MonoBehaviour {
             case MODE_XUANXIANG:
                 backMove();
                 break;
+            case MODE_FIGHT:
+                break;
         }
     }
 
@@ -456,9 +490,10 @@ public class MainGame : MonoBehaviour {
         switch (this.mode) {
             case MODE_MOVE:
                 break;
+            case MODE_FIGHT:
             case MODE_XUANXIANG:
                 obj = buttonList.get(choseXuanXiang);
-                if (!obj.Equals(default(GameObject))) {
+                if (obj!=null&&!obj.Equals(default(GameObject))) {
                     obj.GetComponent<XuanXiangEvent>().OnClickListener();
                     obj.GetComponent<Button>().Select();
                 }
@@ -481,7 +516,7 @@ public class MainGame : MonoBehaviour {
     private void keyEventOfFight() {
         GameObject obj = buttonList.get(choseXuanXiang);
         if (obj != null && !obj.Equals(default(GameObject))) {
-            textEvent.setNotice(obj.GetComponent<XuanXiangEvent>().getGameEvent().conText, 2.5f, false);
+            textEvent.setNotice(obj.GetComponent<XuanXiangEvent>().getGameEvent().conText, 0.4f, true);
         }
     }
 
@@ -496,12 +531,13 @@ public class MainGame : MonoBehaviour {
             } else {
                 GameObject obj = buttonList.get(choseXuanXiang);
                 if (obj != null && !obj.Equals(default(GameObject))) {
-                    textEvent.setNotice(obj.GetComponent<XuanXiangEvent>().getGameEvent().conText, 2.5f, false);
+                    textEvent.setNotice(obj.GetComponent<XuanXiangEvent>().getGameEvent().conText, 0.85f, false);
                 }
                 backMove();
             }
         }
     }
+
     /******************************
 	 *封装函数
 	 *

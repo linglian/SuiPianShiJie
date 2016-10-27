@@ -55,7 +55,10 @@ public class GameNpc : MonoBehaviour {
 	public float extraMoneyOdds = 0f;//金钱加成
 
 	//状态属性
-	public bool isDie = false;
+    public bool isDie = false;
+    public float speedTime = 0;
+    public bool isCanFight = false;
+    public bool isNpc = true;
 	/************************
 	 *不对外开放的函数
 	 *
@@ -98,9 +101,9 @@ public class GameNpc : MonoBehaviour {
 	public static float getPhysicsRealAttack(GameNpc attNpc,GameNpc defNpc){
 		float pAtt = Random.Range (attNpc.pAttLow, attNpc.pAttHigh);
 		float pDef = defNpc.pDefPower;
-		if (Random.Range (1, 100) >= attNpc.pVioHurtOdds) {//暴击时
-			pAtt *= attNpc.pVioHurtAmp+1f;
-			pAtt += attNpc.pVioHurtAdd;
+		if (Random.Range (1, 100) <= attNpc.pVioHurtOdds) {//暴击时
+			pAtt *= ((attNpc.pVioHurtAmp/100f)+1f);
+            pAtt += attNpc.pVioHurtAdd;
 			if (Random.Range (1, 100) >= attNpc.pVioHurtMissDefOdds) {
 				if (1 - attNpc.pVioHurtMissDefAmp / 100f <= 0) {
 					pDef = 0;
