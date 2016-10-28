@@ -48,8 +48,9 @@ public class LinkedList<DataType>
         if (head == null) {
             return default(DataType);
         }
-		while (n != index&&temp.next!=null) {
+		while (n != index&&temp!=null) {
 			temp = temp.next;
+            n++;
 		}
 		if (temp != null)
 			return temp.data;

@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Script\Animator\AnimatorNormalFightAnimator.cs" />
      <Compile Include="Assets\Script\AutoDie.cs" />
      <Compile Include="Assets\Script\ButtonEvent.cs" />
      <Compile Include="Assets\Script\CameraFlow.cs" />
@@ -52,6 +53,7 @@
      <Compile Include="Assets\Script\GameEventScript\GameEvent.cs" />
      <Compile Include="Assets\Script\GameFightScript\FightEvent.cs" />
      <Compile Include="Assets\Script\GameFightScript\FightNormalAttack.cs" />
+     <Compile Include="Assets\Script\GameModel.cs" />
      <Compile Include="Assets\Script\GameNpc.cs" />
      <Compile Include="Assets\Script\GameStart.cs" />
      <Compile Include="Assets\Script\GoBack.cs" />
@@ -61,6 +63,7 @@
      <Compile Include="Assets\Script\SpriteChangePixel.cs" />
      <Compile Include="Assets\Script\TalkEvent\TalkEvent.cs" />
      <Compile Include="Assets\Script\TalkEvent\TalkFightEvent.cs" />
+     <Compile Include="Assets\Script\TalkEvent\TalkGetNormalAttackEvent.cs" />
      <Compile Include="Assets\Script\TalkEvent\TalkTalkEvent.cs" />
      <Compile Include="Assets\Script\TextChangeColor.cs" />
      <Compile Include="Assets\Script\TextEvent.cs" />

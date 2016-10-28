@@ -2,8 +2,12 @@
 using System.Collections;
 
 public class FightEvent : GameEvent {
-    protected GameNpc enemyNpc;
-    protected GameNpc myNpc;
+    protected MainGame mainGame;
+    public string skillName;//技能名字
+    public string skillLvl;//技能等级
+    public string skillExp;//技能经验
+    public string skillMaxExp;//技能最大经验
+    public string skillText;//技能介绍
 
 
     /******************************
@@ -12,12 +16,8 @@ public class FightEvent : GameEvent {
      *继承类不得自己调用
      ******************************/
     protected void normalAttack() {
-        if (selectEnemyNpc() && selectMyNpc()) {
-            if (myNpc.isCanFight) {
-                myNpc.isCanFight = false;
-                myNpc.speedTime = 0;
-                myNpc.normalAttack(enemyNpc);
-            }
+        if (selectMainGame()) {
+            mainGame.normalAttack();
         }
     }
     
@@ -28,18 +28,11 @@ public class FightEvent : GameEvent {
      *
      *
      ******************************/
-
-    private bool selectEnemyNpc() {
-        if (this.enemyNpc==null) {
-            this.enemyNpc = GameObject.Find("Game").GetComponent<MainGame>().getEnemyNpc();
+    private bool selectMainGame() {
+        if (mainGame == null) {
+            mainGame = GameObject.Find("Game").GetComponent<MainGame>();
         }
         return true;
     }
 
-    private bool selectMyNpc() {
-        if (this.myNpc == null) {
-            this.myNpc = GameObject.Find("Game").GetComponent<MainGame>().getMyNpc();
-        }
-        return true;
-    }
 }

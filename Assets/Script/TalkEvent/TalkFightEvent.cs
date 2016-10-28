@@ -10,7 +10,7 @@ public class TalkFightEvent : TalkEvent {
         }
 	}
 
-	override public void runEvent(){
+    override public void runEvent() {
         this.startFight();
 	}
 }

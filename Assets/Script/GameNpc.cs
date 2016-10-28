@@ -8,7 +8,7 @@ using System.Collections;
  *******************/
 public class GameNpc : MonoBehaviour {
 	//生命显示相关
-	public GameObject statusHp;
+	private GameObject statusHp;
 	GameObject obj;
 	Vector3 hpVector;
 
@@ -59,6 +59,7 @@ public class GameNpc : MonoBehaviour {
     public float speedTime = 0;
     public bool isCanFight = false;
     public bool isNpc = true;
+
 	/************************
 	 *不对外开放的函数
 	 *
@@ -68,7 +69,8 @@ public class GameNpc : MonoBehaviour {
 	//初始化函数
 	void Start () {
 		this.hp = maxHp;
-		this.mp = maxMp;
+        this.mp = maxMp;
+        statusHp = GameObject.Find("MainGame").transform.Find("Game").GetComponent<GameModel>().statusHp;
 		Vector3 pos = this.transform.position;
 		obj = (GameObject)Instantiate (statusHp,pos,Quaternion.identity);
 		obj.transform.SetParent (this.transform);
@@ -86,6 +88,18 @@ public class GameNpc : MonoBehaviour {
 		obj.transform.localScale = hpVector;
 	}
 
+    private void upGrade() {
+        lvl++;
+        maxExp = lvl * lvl * 20;
+        this.maxHp += 5;
+        this.maxMp += 3;
+        this.hp = maxHp;
+        this.mp = maxMp;
+        this.pAttLow += 1;
+        this.pAttHigh += 2;
+        this.mAttLow += 1;
+        this.mAttHigh += 2;
+    }
     /************************
      *对外开放的接口
      *
@@ -122,6 +136,20 @@ public class GameNpc : MonoBehaviour {
 		return pAtt;
 	}
 
+    public void addExp(float aExp) {
+        this.exp += aExp;
+        while (this.exp >= maxExp) {
+            this.exp -= maxExp;
+            upGrade();
+        }
+    }
+
+    public void deleteExp(float dExp) {
+        this.exp -= dExp;
+        if (this.exp < 0) {
+            this.exp = 0;
+        }
+    }
 	/************************
 	* 封装函数
 	* 
