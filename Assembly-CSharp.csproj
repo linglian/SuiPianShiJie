@@ -45,29 +45,31 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Script\Animator\AnimatorEvent.cs" />
      <Compile Include="Assets\Script\Animator\AnimatorNormalFightAnimator.cs" />
-     <Compile Include="Assets\Script\AutoDie.cs" />
-     <Compile Include="Assets\Script\ButtonEvent.cs" />
-     <Compile Include="Assets\Script\CameraFlow.cs" />
-     <Compile Include="Assets\Script\DontMove.cs" />
      <Compile Include="Assets\Script\GameEventScript\GameEvent.cs" />
      <Compile Include="Assets\Script\GameFightScript\FightEvent.cs" />
      <Compile Include="Assets\Script\GameFightScript\FightNormalAttack.cs" />
      <Compile Include="Assets\Script\GameModel.cs" />
-     <Compile Include="Assets\Script\GameNpc.cs" />
      <Compile Include="Assets\Script\GameStart.cs" />
-     <Compile Include="Assets\Script\GoBack.cs" />
-     <Compile Include="Assets\Script\LinkedList.cs" />
      <Compile Include="Assets\Script\MainGame.cs" />
-     <Compile Include="Assets\Script\Move.cs" />
-     <Compile Include="Assets\Script\SpriteChangePixel.cs" />
+     <Compile Include="Assets\Script\Npc\GameNpc.cs" />
+     <Compile Include="Assets\Script\Npc\Move.cs" />
      <Compile Include="Assets\Script\TalkEvent\TalkEvent.cs" />
      <Compile Include="Assets\Script\TalkEvent\TalkFightEvent.cs" />
      <Compile Include="Assets\Script\TalkEvent\TalkGetNormalAttackEvent.cs" />
      <Compile Include="Assets\Script\TalkEvent\TalkTalkEvent.cs" />
-     <Compile Include="Assets\Script\TextChangeColor.cs" />
-     <Compile Include="Assets\Script\TextEvent.cs" />
-     <Compile Include="Assets\Script\XuanXiangEvent.cs" />
+     <Compile Include="Assets\Script\Toolkit\AutoDie.cs" />
+     <Compile Include="Assets\Script\Toolkit\CameraFlow.cs" />
+     <Compile Include="Assets\Script\Toolkit\DontMove.cs" />
+     <Compile Include="Assets\Script\Toolkit\GoBack.cs" />
+     <Compile Include="Assets\Script\Toolkit\LinkedList.cs" />
+     <Compile Include="Assets\Script\Toolkit\SpriteChangePixel.cs" />
+     <Compile Include="Assets\Script\UI\ButtonEvent.cs" />
+     <Compile Include="Assets\Script\UI\GameEmptyObject.cs" />
+     <Compile Include="Assets\Script\UI\TextChangeColor.cs" />
+     <Compile Include="Assets\Script\UI\TextEvent.cs" />
+     <Compile Include="Assets\Script\UI\XuanXiangEvent.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>G:/unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

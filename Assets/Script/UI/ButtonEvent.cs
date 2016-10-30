@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ButtonEvent : MonoBehaviour {
+public class ButtonEvent : GameEmptyObject {
 	private GameEvent[] gameEvent;
 	MainGame mainGame;
 	// Use this for initialization
@@ -10,7 +10,7 @@ public class ButtonEvent : MonoBehaviour {
 		mainGame = GameObject.Find ("Game").GetComponent<MainGame> ();
 	}
 
-	void OnCollisionEnter2D (Collision2D other) {
-		mainGame.setButton (gameEvent);
-	}
+    public override void CollisionEvent() {
+        mainGame.setButton(gameEvent);
+    }
 }

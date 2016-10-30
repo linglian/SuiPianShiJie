@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class AnimatorNormalFightAnimator : MonoBehaviour {
+public class AnimatorNormalFightAnimator : AnimatorEvent {
     public GameObject fight;
     private Vector3 pos;
     private Vector3 myPos;
@@ -35,6 +35,7 @@ public class AnimatorNormalFightAnimator : MonoBehaviour {
                     break;
             }
             if (isFight==1&&time >= maxTime) {
+                myNpc.normalAttack(enemyNpc);
                 isFight = 2;
                 time = 0;
             } else if (isFight == 2 && time >= maxTime) {
@@ -70,9 +71,11 @@ public class AnimatorNormalFightAnimator : MonoBehaviour {
      *
      ******************************/
 
-    public void startFight(float time) {
-        this.isFight = 1;
-        this.maxTime = time/2f;
-        this.time = 0;
+    public override void runEvent() {
+        if (myNpc != null) {
+            this.isFight = 1;
+            this.maxTime = myNpc.norFightSpeed * (1f + myNpc.fightSpeedAmp) / 2f;
+            this.time = 0;
+        }
     }
 }

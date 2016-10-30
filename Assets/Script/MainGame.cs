@@ -22,6 +22,7 @@ public class MainGame : MonoBehaviour {
 
     //移动相关
     public GameObject npc;
+    private GameEmptyObject nowObject;
     private Animator ani;
     private Move move;
     private float dur = 0.0f;
@@ -29,14 +30,16 @@ public class MainGame : MonoBehaviour {
 
     //文本相关
     public GameObject textKuang;
+    public GameObject textDoc;//介绍
+    private bool isTextDoc = false;
     private TextEvent textEvent;
 
     //战斗相关
-    private GameNpc enemyNpc;
-    public GameNpc myNpc;
     public GameObject status;
     public GameObject fightZiji;
     public GameObject fightDiren;
+    private GameNpc enemyNpc;
+    private GameNpc myNpc;
     private GameObject myHp;
     private GameObject myMp;
     private GameObject mySpeed;
@@ -74,7 +77,13 @@ public class MainGame : MonoBehaviour {
     public void backMove() {
         if (this.mode != MainGame.MODE_FIGHT) {
             destroyButton();
+            string str;
+            str = nowObject.ObjectName + "\n";
+            for (int i = 0; i < nowObject.introduce.Length; i++) {
+                str += nowObject.introduce[i] + "\n";
+            }
             this.mode = MainGame.MODE_MOVE;
+            setText(str);
         }
     }
 
@@ -178,7 +187,36 @@ public class MainGame : MonoBehaviour {
         Text text = obj.GetComponentInChildren<Text>();
         text.text = str;
     }
-
+    //放置文本，在文本里显示，即UI显示
+    public void setText(string str) {
+        isTextDoc = true;
+        if (!textEvent.getIsText()) {
+            this.textDoc.gameObject.SetActive(true);
+        }
+        this.textDoc.GetComponent<Text>().text = str;
+    }
+    //取消介绍框
+    public void closeText() {
+        this.textDoc.gameObject.SetActive(false);
+        isTextDoc = false;
+    }
+    public void stopText() {
+        this.textDoc.gameObject.SetActive(false);
+    }
+    public void startText() {
+        if (isTextDoc) {
+            this.textDoc.gameObject.SetActive(true);
+        }
+    }
+    //设置现在正在面向的对象
+    public void setNowObject(GameEmptyObject obj) {
+        this.nowObject = obj;
+    }
+    //取消现在正在面向的对象
+    public void closeNowObject() {
+        closeText();
+        this.nowObject = null;
+    }
     /*******************
      *战斗相关
      *
@@ -214,23 +252,17 @@ public class MainGame : MonoBehaviour {
     //普通攻击
     public void normalAttack() {
         if (myNpc.isCanFight) {
-            ziji.startFight((this.myNpc.norFightSpeed * (1f + this.myNpc.fightSpeedAmp)));
-            myNpc.normalAttack(enemyNpc);
+            ziji.startFight(myNpc, enemyNpc);
+            ziji.runEvent();
         }
     }
 
     //获取战斗双方
     public GameNpc getEnemyNpc() {
-        if (this.mode == MainGame.MODE_FIGHT) {
             return this.enemyNpc;
-        }
-        return null;
     }
     public GameNpc getMyNpc() {
-        if (this.mode == MainGame.MODE_FIGHT) {
             return this.myNpc;
-        }
-        return null;
     }
 
     /************************
@@ -238,7 +270,6 @@ public class MainGame : MonoBehaviour {
      *
      *
      ************************/
-
 
     /*******************
      *基础相关
@@ -266,6 +297,7 @@ public class MainGame : MonoBehaviour {
 
         //文本相关
         textEvent = GameObject.Find("Game").transform.Find("GameGraphics").transform.Find("NoticeCanvas").transform.Find("Notice").transform.GetComponent<TextEvent>();
+        this.textDoc.gameObject.SetActive(false);
 
         //摄像头相关
         gameCamera = this.transform.Find("GameCamera").GetComponent<Camera>();
@@ -286,20 +318,12 @@ public class MainGame : MonoBehaviour {
 
     //更新函数
     void FixedUpdate() {
-        /*此为电脑键盘输入，测试用，实际运行时请注释掉此处
-        if (Input.anyKey) {
-            if(Input.GetKeyDown(KeyCode.W)){
-                setKeyDown(KEY_UP);
-            } else if(Input.GetKey(KeyCode.S)){
-                setKeyDown(KEY_DOWN);
-            } else if(Input.GetKey(KeyCode.D)){
-                setKeyDown(KEY_RIGHT);
-            } else if(Input.GetKey(KeyCode.A)){
-                setKeyDown(KEY_LEFT);
-            }
-        }
-        */
-        xuanXiangTime += Time.fixedDeltaTime;
+        
+        /*******************
+         *更新战斗相关
+         *
+         *
+         *******************/
         if (this.mode == MainGame.MODE_FIGHT) {
             myNpc.speedTime += Time.fixedDeltaTime;
             if (myNpc.speedTime >= (this.myNpc.norFightSpeed * (1f + this.myNpc.fightSpeedAmp))) {
@@ -334,6 +358,13 @@ public class MainGame : MonoBehaviour {
                     break;
             }
         }
+        
+        /*******************
+         *更新按键
+         *
+         *
+         *******************/
+        xuanXiangTime += Time.fixedDeltaTime;
         if (this.mode != MainGame.MODE_MOVE) {
             buttonList.get(choseXuanXiang).GetComponent<Button>().Select();
         }
@@ -343,8 +374,8 @@ public class MainGame : MonoBehaviour {
     private void fightNpcAI(GameNpc tNpc) {
         if (tNpc.isCanFight) {
             tNpc.speedTime = 0;
-            diren.startFight((this.enemyNpc.norFightSpeed * (1f + this.enemyNpc.fightSpeedAmp)));
-            tNpc.normalAttack(this.myNpc);
+            diren.startFight(enemyNpc,myNpc);
+            diren.runEvent();
         }
     }
 
@@ -468,6 +499,10 @@ public class MainGame : MonoBehaviour {
                 ani.CrossFade("Right", dur);
                 move.setMoveMode(Move.MOVEMODE_RIGHT);
                 break;
+            default:
+                ani.CrossFade("Wait", dur);
+                move.stopMove();
+                break;
         }
     }
 
@@ -540,6 +575,10 @@ public class MainGame : MonoBehaviour {
         GameObject obj;
         switch (this.mode) {
             case MODE_MOVE:
+                if (this.nowObject != null) {
+                    this.nowObject.CollisionEvent();
+                    closeText();
+                }
                 break;
             case MODE_FIGHT:
             case MODE_XUANXIANG:
@@ -556,6 +595,7 @@ public class MainGame : MonoBehaviour {
     private void KeyNoEvent() {
         switch (this.mode) {
             case MODE_MOVE:
+                moveNpc(-1);
                 break;
             case MODE_XUANXIANG:
                 backMove();

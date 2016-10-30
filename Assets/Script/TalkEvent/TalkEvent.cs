@@ -31,7 +31,7 @@ public class TalkEvent : GameEvent {
      *******************/
     protected GameNpc getNpc() {
         if (selectMainGame()) {
-            return mainGame.myNpc;
+            return mainGame.getMyNpc();
         }
         return null;
     }
@@ -43,7 +43,7 @@ public class TalkEvent : GameEvent {
     //开始战斗
     protected void startFight() {
         if (selectMainGame()) {
-            if (mainGame.myNpc.GetComponent<FightEvent>() != null) {
+            if (mainGame.getMyNpc().GetComponent<FightEvent>() != null) {
                 mainGame.startFight(this.GetComponentInParent<GameNpc>());
             } else {
                 setNotice("你还没有学会任何技能，怎么战斗啊", 1.5f, true);
