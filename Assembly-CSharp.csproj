@@ -47,6 +47,8 @@
   <ItemGroup>
      <Compile Include="Assets\Script\Animator\AnimatorEvent.cs" />
      <Compile Include="Assets\Script\Animator\AnimatorNormalFightAnimator.cs" />
+     <Compile Include="Assets\Script\Block\AutoHeal.cs" />
+     <Compile Include="Assets\Script\Block\FastMoveSpeed.cs" />
      <Compile Include="Assets\Script\GameEventScript\GameEvent.cs" />
      <Compile Include="Assets\Script\GameFightScript\FightEvent.cs" />
      <Compile Include="Assets\Script\GameFightScript\FightNormalAttack.cs" />
@@ -61,10 +63,13 @@
      <Compile Include="Assets\Script\TalkEvent\TalkTalkEvent.cs" />
      <Compile Include="Assets\Script\Toolkit\AutoDie.cs" />
      <Compile Include="Assets\Script\Toolkit\CameraFlow.cs" />
+     <Compile Include="Assets\Script\Toolkit\ColorToHex.cs" />
      <Compile Include="Assets\Script\Toolkit\DontMove.cs" />
      <Compile Include="Assets\Script\Toolkit\GoBack.cs" />
      <Compile Include="Assets\Script\Toolkit\LinkedList.cs" />
+     <Compile Include="Assets\Script\Toolkit\NpcStatus.cs" />
      <Compile Include="Assets\Script\Toolkit\SpriteChangePixel.cs" />
+     <Compile Include="Assets\Script\UI\AutoMove.cs" />
      <Compile Include="Assets\Script\UI\ButtonEvent.cs" />
      <Compile Include="Assets\Script\UI\GameEmptyObject.cs" />
      <Compile Include="Assets\Script\UI\TextChangeColor.cs" />

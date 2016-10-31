@@ -7,7 +7,6 @@ public class MainGame : MonoBehaviour {
     //摄像头相关
     Camera gameCamera;
     Camera fightCamera;
-
     //地图相关
     public GameObject floor;
     public int Width = 50;
@@ -15,6 +14,10 @@ public class MainGame : MonoBehaviour {
 
     //虚拟按键选项相关
     public GameObject xuanXiang;
+    public GameObject functionButton;
+    private GameEvent[] buttonEvent;
+    private int cutPoint = 0;//分割点
+    private int buttonCount = 0;//按键总数
     private LinkedList<GameObject> buttonList;
     private int choseXuanXiang;//当前选择的选项,默认为0
     private int lastChoseXuanXiang;//上一个YES选择的选项，双击则放大对话框
@@ -30,7 +33,11 @@ public class MainGame : MonoBehaviour {
 
     //文本相关
     public GameObject textKuang;
+    public GameObject textKuangMove;
     public GameObject textDoc;//介绍
+    public GameObject statusPanel;//角色面板
+    private Text textOfStatusPanel;//角色面板
+    private bool isShowStatusPanel = false;
     private bool isTextDoc = false;
     private TextEvent textEvent;
 
@@ -61,6 +68,8 @@ public class MainGame : MonoBehaviour {
     public const int KEY_RIGHT = 3;
     public const int KEY_YES = 4;
     public const int KEY_NO = 5;
+    public const int KEY_STATUSPANEL = 6;
+    public const int KEY_BACKPACK = 7;
 
     /******************************
      *对外开放的接口
@@ -79,6 +88,7 @@ public class MainGame : MonoBehaviour {
             destroyButton();
             string str;
             str = nowObject.ObjectName + "\n";
+            str += "----------" + "\n";
             for (int i = 0; i < nowObject.introduce.Length; i++) {
                 str += nowObject.introduce[i] + "\n";
             }
@@ -124,41 +134,27 @@ public class MainGame : MonoBehaviour {
             case KEY_NO:
                 KeyNoEvent();
                 break;
+            case KEY_STATUSPANEL:
+                KeyStatusPanelEvent();
+                break;
+            case KEY_BACKPACK:
+                KeyBackPackEvent();
+                break;
         }
     }
 
     //放置选项按键，传入的参数是GameEvent数组，需要继承GameEvent类来进行开发
     public void setButton(GameEvent[] gameEvent) {
-        GameObject obj;
-        Vector3 pos;
-        XuanXiangEvent xxEvent;
-        Thread.Sleep(200);
-        destroyButton();
-        int n = 0;
-        for (int i = 0; i < gameEvent.Length; i++,n++) {
+        buttonEvent = gameEvent;
+        this.cutPoint = 0;
+        this.buttonCount = 0;
+        for (int i =0; i < gameEvent.Length; i++) {
             if (!gameEvent[i].isCanShow) {
                 continue;
             }
-            pos = Vector3.zero;
-            obj = (GameObject)Instantiate(xuanXiang, pos, Quaternion.identity);
-            obj.transform.SetParent(this.transform.Find("GameGraphics").transform.Find("UICanvas").transform.Find("TextFrame").transform);
-            RectTransform rectRra = obj.GetComponent<RectTransform>();
-            pos = Vector3.zero;
-            pos.x = 0f;
-            pos.y = 100f - n * 50;
-            pos.z = 0f;
-            rectRra.anchoredPosition3D = pos;
-            rectRra.localScale = Vector3.one;
-            Text text = obj.GetComponentInChildren<Text>();
-            text.text = (n + 1) + "," + gameEvent[i].buttonText;
-            xxEvent = obj.GetComponent<XuanXiangEvent>();
-            xxEvent.setGameEvent(gameEvent[i]);
-            buttonList.add(obj);
+            buttonCount++;
         }
-        changeMode(MainGame.MODE_XUANXIANG);
-        buttonList.get(0).GetComponent<Button>().Select();
-        choseXuanXiang = 0;
-        lastChoseXuanXiang = -1;
+        setButton(buttonEvent, cutPoint);
     }
 
     /*******************
@@ -186,6 +182,28 @@ public class MainGame : MonoBehaviour {
         rectRra.anchoredPosition3D = pos;
         Text text = obj.GetComponentInChildren<Text>();
         text.text = str;
+    }
+    //放置文本框，独立于游戏世界-基于gameObject
+    public void setTextMove(string str,float time, GameObject gameObject) {
+        setTextMove(str,time, gameObject.transform.position.x, gameObject.transform.position.y + 2f);
+    }
+    //放置文本框，独立于游戏世界-基于x,y
+    public void setTextMove(string str, float time, float posX, float posY) {
+        GameObject obj;
+        Vector3 pos;
+        pos = Vector3.zero;
+        obj = (GameObject)Instantiate(textKuangMove, pos, Quaternion.identity);
+        obj.transform.SetParent(this.transform.Find("TextCanvas").transform);
+        RectTransform rectRra = obj.GetComponent<RectTransform>();
+        pos = Vector3.zero;
+        pos.x = posX;
+        pos.y = posY;
+        pos.z = 0f;
+        rectRra.anchoredPosition3D = pos;
+        Text text = obj.GetComponentInChildren<Text>();
+        text.text = str;
+        AutoMove autoMove = obj.GetComponent<AutoMove>();
+        autoMove.startMove(time);
     }
     //放置文本，在文本里显示，即UI显示
     public void setText(string str) {
@@ -225,27 +243,55 @@ public class MainGame : MonoBehaviour {
     //开始战斗-进入战斗后不可使用backMove()
     public void startFight(GameNpc enemyNpc) {
         //初始化战斗信息
-        if (enemyNpc.isNpc) {
-            enemyNpc.hp = enemyNpc.maxHp;
-            enemyNpc.mp = enemyNpc.maxMp;
-        }
         enemyNpc.isCanFight = false;
         enemyNpc.speedTime = 0;
         myNpc.isCanFight = false;
         myNpc.speedTime = 0;
         this.enemyNpc = enemyNpc;
+        functionButton.transform.Find("StatusPanel").gameObject.SetActive(false);
+        functionButton.transform.Find("BackPack").gameObject.SetActive(false);
+        this.statusPanel.gameObject.SetActive(false);
         changeMode(MainGame.MODE_FIGHT);
     }
 
     //结束战斗-进入战斗后不可使用backMove()
-    public void endFight() {
+    public void endFight(GameNpc winer,GameNpc loser) {
         //初始化战斗信息
         destroyButton();
-        enemyNpc.isCanFight = false;
-        enemyNpc.speedTime = 0;
-        myNpc.isCanFight = false;
-        myNpc.speedTime = 0;
+        if (loser.isCanDie) {
+            Destroy(loser.gameObject);
+        } else {
+            if (!loser.isNpc) {
+                loser.deleteExp(loser.exp / 2f);
+            }
+            loser.hp = loser.maxHp;
+            loser.mp = loser.maxMp;
+            loser.isCanFight = false;
+            loser.speedTime = 0;
+        }
+        if (winer.isAutoFullStaut) {
+            winer.hp = winer.maxHp;
+            winer.mp = winer.maxMp;
+        }
+        int n = winer.addExp(loser.exp * (loser.extraExpOdds / 100f + 1f));
+        if (n > 0) {
+            setTextMove("经验+" + loser.exp * (loser.extraExpOdds / 100f + 1f), 0.3f, loser.gameObject);
+            setTextMove("等级+" + n, 0.3f, winer.gameObject);
+            setTextMove("最大生命" + n * 5, 0.6f, winer.gameObject);
+            setTextMove("最大法力" + n * 3, 0.9f, winer.gameObject);
+            setTextMove("物理攻击上限" + n * 2, 1.2f, winer.gameObject);
+            setTextMove("物理攻击下限" + n * 1, 1.5f, winer.gameObject);
+            setTextMove("魔法攻击上限" + n * 1.2, 1.8f, winer.gameObject);
+            setTextMove("魔法攻击下限" + n * 0.6, 2.1f, winer.gameObject);
+        }
+        winer.isCanFight = false;
+        winer.speedTime = 0;
         this.enemyNpc = null;
+        functionButton.transform.Find("StatusPanel").gameObject.SetActive(true);
+        functionButton.transform.Find("BackPack").gameObject.SetActive(true);
+        if (isShowStatusPanel) {
+            this.statusPanel.gameObject.SetActive(true);
+        }
         changeMode(MainGame.MODE_MOVE);
     }
 
@@ -259,10 +305,10 @@ public class MainGame : MonoBehaviour {
 
     //获取战斗双方
     public GameNpc getEnemyNpc() {
-            return this.enemyNpc;
+        return this.enemyNpc;
     }
     public GameNpc getMyNpc() {
-            return this.myNpc;
+        return this.myNpc;
     }
 
     /************************
@@ -298,6 +344,8 @@ public class MainGame : MonoBehaviour {
         //文本相关
         textEvent = GameObject.Find("Game").transform.Find("GameGraphics").transform.Find("NoticeCanvas").transform.Find("Notice").transform.GetComponent<TextEvent>();
         this.textDoc.gameObject.SetActive(false);
+        this.statusPanel.gameObject.SetActive(false);
+        this.textOfStatusPanel = this.statusPanel.GetComponentInChildren<Text>();
 
         //摄像头相关
         gameCamera = this.transform.Find("GameCamera").GetComponent<Camera>();
@@ -313,12 +361,11 @@ public class MainGame : MonoBehaviour {
         this.enemySpeed = status.transform.Find("EnemySpeed").gameObject;
         this.ziji = fightZiji.GetComponent<AnimatorNormalFightAnimator>();
         this.diren = fightDiren.GetComponent<AnimatorNormalFightAnimator>();
-
     }
 
     //更新函数
     void FixedUpdate() {
-        
+
         /*******************
          *更新战斗相关
          *
@@ -344,21 +391,24 @@ public class MainGame : MonoBehaviour {
                 case 0:
                     break;
                 case 1://myNpc失败
-                    this.enemyNpc.addExp(myNpc.exp * (myNpc.extraExpOdds / 100f + 1f));
-                    this.enemyNpc.deleteExp(this.enemyNpc.exp / 2f);
                     textEvent.setNotice("很遗憾你输掉了战斗\n作为惩罚将扣除你当前经验的50%", 1.5f, true);
-                    this.myNpc.hp = this.myNpc.maxHp;
-                    this.myNpc.mp = this.myNpc.maxMp;
-                    endFight();
+                    endFight(enemyNpc,myNpc);
                     break;
                 case 2://enemyNpc失败
-                    this.myNpc.addExp(enemyNpc.exp * (enemyNpc.extraExpOdds / 100f + 1f));
                     textEvent.setNotice("恭喜你赢得了战斗", 1.5f, true);
-                    endFight();
+                    endFight(myNpc, enemyNpc);
                     break;
             }
         }
         
+        /*******************
+         *文本相关
+         *
+         *
+         *******************/
+        if (isShowStatusPanel) {
+            uploadStatus(this.myNpc);
+        }
         /*******************
          *更新按键
          *
@@ -374,7 +424,7 @@ public class MainGame : MonoBehaviour {
     private void fightNpcAI(GameNpc tNpc) {
         if (tNpc.isCanFight) {
             tNpc.speedTime = 0;
-            diren.startFight(enemyNpc,myNpc);
+            diren.startFight(enemyNpc, myNpc);
             diren.runEvent();
         }
     }
@@ -519,6 +569,9 @@ public class MainGame : MonoBehaviour {
                     if (obj != null && !obj.Equals(default(GameObject))) {
                         buttonList.get(--choseXuanXiang).GetComponent<Button>().Select();
                     }
+                } else if (cutPoint > 0) {
+                    setButton(buttonEvent, --cutPoint);
+                    choseXuanXiang = 4;
                 }
                 break;
         }
@@ -537,6 +590,8 @@ public class MainGame : MonoBehaviour {
                     if (obj != null && !obj.Equals(default(GameObject))) {
                         buttonList.get(++choseXuanXiang).GetComponent<Button>().Select();
                     }
+                }else if(cutPoint<(int)(buttonCount/5)){
+                    setButton(buttonEvent, ++cutPoint);
                 }
                 break;
         }
@@ -549,7 +604,10 @@ public class MainGame : MonoBehaviour {
                 moveNpc(Move.MOVEMODE_LEFT);
                 break;
             case MODE_XUANXIANG:
-                backMove();
+                if (cutPoint > 0) {
+                    cutPoint--;
+                    setButton(buttonEvent, cutPoint);
+                }
                 break;
             case MODE_FIGHT:
                 break;
@@ -563,7 +621,10 @@ public class MainGame : MonoBehaviour {
                 moveNpc(Move.MOVEMODE_RIGHT);
                 break;
             case MODE_XUANXIANG:
-                backMove();
+                if (cutPoint < (int)(buttonCount / 5)) {
+                    cutPoint++;
+                    setButton(buttonEvent, cutPoint);
+                }
                 break;
             case MODE_FIGHT:
                 break;
@@ -603,6 +664,48 @@ public class MainGame : MonoBehaviour {
         }
     }
 
+    //StatusPanel按键的事件
+    private void KeyStatusPanelEvent() {
+        switch (this.mode) {
+            case MODE_MOVE:
+            case MODE_XUANXIANG:
+            case MODE_FIGHT:
+                if (isShowStatusPanel) {
+                    closeStatusPanel();
+                } else {
+                    showStatusPanel(this.myNpc);
+                }
+                break;
+        }
+    }
+    //BackPackl按键的事件
+    private void KeyBackPackEvent() {
+        switch (this.mode) {
+            case MODE_MOVE:
+
+                break;
+            case MODE_XUANXIANG:
+
+                break;
+            case MODE_FIGHT:
+
+                break;
+        }
+    }
+    //显示玩家详细信息
+    private void showStatusPanel(GameNpc npc) {
+        this.statusPanel.gameObject.SetActive(true);
+        isShowStatusPanel = true;
+    }
+    //关闭玩家详细信息
+    private void closeStatusPanel() {
+        this.statusPanel.gameObject.SetActive(false);
+        isShowStatusPanel = false;
+    }
+    //更新
+    private void uploadStatus(GameNpc npc) {
+        this.textOfStatusPanel.text = NpcStatus.getStatus(npc);
+    }
     //进行战斗时调用
     private void keyEventOfFight() {
         GameObject obj = buttonList.get(choseXuanXiang);
@@ -631,6 +734,39 @@ public class MainGame : MonoBehaviour {
                 }
             }
         }
+    }
+
+    private void setButton(GameEvent[] gameEvent, int cutPoint) {
+        destroyButton();
+        GameObject obj;
+        Vector3 pos;
+        XuanXiangEvent xxEvent;
+        int n = 0;
+        for (int i = cutPoint*5; i < gameEvent.Length && n < 5; i++) {
+            if (!gameEvent[i].isCanShow) {
+                continue;
+            }
+            pos = Vector3.zero;
+            obj = (GameObject)Instantiate(xuanXiang, pos, Quaternion.identity);
+            obj.transform.SetParent(this.transform.Find("GameGraphics").transform.Find("UICanvas").transform.Find("TextFrame").transform);
+            RectTransform rectRra = obj.GetComponent<RectTransform>();
+            pos = Vector3.zero;
+            pos.x = 0f;
+            pos.y = 100f - n * 50;
+            pos.z = 0f;
+            rectRra.anchoredPosition3D = pos;
+            rectRra.localScale = Vector3.one;
+            Text text = obj.GetComponentInChildren<Text>();
+            text.text = (n+cutPoint*5 + 1) + "." + gameEvent[i].buttonText;
+            xxEvent = obj.GetComponent<XuanXiangEvent>();
+            xxEvent.setGameEvent(gameEvent[i]);
+            buttonList.add(obj);
+            n++;
+        }
+        changeMode(MainGame.MODE_XUANXIANG);
+        buttonList.get(0).GetComponent<Button>().Select();
+        choseXuanXiang = 0;
+        lastChoseXuanXiang = -1;
     }
 
     /******************************

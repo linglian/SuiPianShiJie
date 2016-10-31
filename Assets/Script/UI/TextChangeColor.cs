@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 public class TextChangeColor : MonoBehaviour {
 	Text text;
-	public bool isChange;
-	public float minColor;
-	public float maxColor;
+	public bool isChange = true;
+	public float minColor = 1;
+	public float maxColor = 254;
 	float addColorR;
 	float addColorG;
 	float addColorB;

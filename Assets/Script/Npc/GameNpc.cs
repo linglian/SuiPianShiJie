@@ -59,6 +59,10 @@ public class GameNpc : MonoBehaviour {
     public float speedTime = 0;
     public bool isCanFight = false;
     public bool isNpc = true;
+    public bool isCanDie = true;
+    public bool isAutoFullStaut = true;
+    public float autoHeal = 0;//附加回血百分比
+    public float autoMuse = 0;//附加回蓝百分比
 
 	/************************
 	 *不对外开放的函数
@@ -86,8 +90,10 @@ public class GameNpc : MonoBehaviour {
 	void FixedUpdate () {
 		hpVector.x = (10f/this.transform.localScale.x)*(hp*0.7f+mp*0.3f) / maxHp;
 		obj.transform.localScale = hpVector;
+        this.addHp(this.maxHp*(autoHeal/100f) * Time.fixedDeltaTime);
 	}
 
+    //升级
     private void upGrade() {
         lvl++;
         maxExp = lvl * lvl * 20;
@@ -97,8 +103,8 @@ public class GameNpc : MonoBehaviour {
         this.mp = maxMp;
         this.pAttLow += 1;
         this.pAttHigh += 2;
-        this.mAttLow += 1;
-        this.mAttHigh += 2;
+        this.mAttLow += 0.6f;
+        this.mAttHigh += 1.2f;
     }
     /************************
      *对外开放的接口
@@ -136,18 +142,33 @@ public class GameNpc : MonoBehaviour {
 		return pAtt;
 	}
 
-    public void addExp(float aExp) {
+    //增加经验
+    public int addExp(float aExp) {
         this.exp += aExp;
-        while (this.exp >= maxExp) {
+        int n = 0;
+        while (this.lvl<this.maxLvl&&this.exp >= maxExp) {
             this.exp -= maxExp;
             upGrade();
+            n++;
         }
+        if (this.exp >= this.maxExp * 10f) {
+            this.exp = this.maxExp*10f;
+        }
+        return n;
     }
 
+    //减少经验
     public void deleteExp(float dExp) {
         this.exp -= dExp;
         if (this.exp < 0) {
             this.exp = 0;
+        }
+    }
+
+    public void addHp(float hp) {
+        this.hp += hp;
+        if (this.hp >= this.maxHp) {
+            this.hp = this.maxHp;
         }
     }
 	/************************
@@ -155,6 +176,5 @@ public class GameNpc : MonoBehaviour {
 	* 
 	* 
 	************************/
-
 
 }
