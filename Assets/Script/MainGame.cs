@@ -4,9 +4,21 @@ using System.Threading;
 using System.Collections;
 
 public class MainGame : MonoBehaviour {
+    //状态相关
+    public static bool isStop = false;
+    public static bool isStart = false;
+    public Text fpsText;
+    public float autoSaveMaxTime = 1f;//自动保存游戏(秒)
+    private float autoSaveTime = 0f;
+    private float fpsTime = 0;
+    private int fps = 0;
+    //数据相关
+    private GameData data;
     //摄像头相关
+	Canvas gameCanvas;
     Camera gameCamera;
     Camera fightCamera;
+    Camera uiCamera;
     //地图相关
     public GameObject floor;
     public int Width = 50;
@@ -22,6 +34,7 @@ public class MainGame : MonoBehaviour {
     private int choseXuanXiang;//当前选择的选项,默认为0
     private int lastChoseXuanXiang;//上一个YES选择的选项，双击则放大对话框
     private float xuanXiangTime;
+    public int buttonNumber = 7;
 
     //移动相关
     public GameObject npc;
@@ -251,6 +264,15 @@ public class MainGame : MonoBehaviour {
         functionButton.transform.Find("StatusPanel").gameObject.SetActive(false);
         functionButton.transform.Find("BackPack").gameObject.SetActive(false);
         this.statusPanel.gameObject.SetActive(false);
+        Vector3 pos = Vector3.zero;
+        pos.x = 2.5f;
+        pos.y = 0.5f;
+        ziji.transform.localPosition = pos;
+        ziji.GetComponent<Rigidbody>().mass = myNpc.lvl+myNpc.liliang;
+        pos.x = -2.5f;
+        pos.y = 0.5f;
+        diren.transform.localPosition = pos;
+        diren.GetComponent<Rigidbody>().mass = myNpc.lvl + myNpc.liliang;
         changeMode(MainGame.MODE_FIGHT);
     }
 
@@ -311,6 +333,28 @@ public class MainGame : MonoBehaviour {
         return this.myNpc;
     }
 
+    //第一次游戏
+    public void firstBegin() {
+        this.uiCamera.gameObject.SetActive(true);
+    }
+
+    //设置名字，并保存
+    public void setNewPlayer(string name) {
+        if (TextCheck.isUserName(name)&&name.Length<=8) {
+        data.nowId = data.allIdCount++ + 1;
+        PlayerPrefs.SetInt("nowId", data.nowId);
+        PlayerPrefs.SetInt("AllIDCount", data.allIdCount);
+        myNpc.npcName = name;
+        LoadAndSave.saveNpc(myNpc, data.nowId);
+        this.uiCamera.gameObject.SetActive(false);
+        } else if (name.Length <= 8) {
+            GameObject.Find("Game").transform.Find("UICamera").transform.Find("FistGameCanvas").transform.Find("NameInputField").transform.Find("Placeholder").GetComponent<Text>().text = "名字里不能带字符";
+            GameObject.Find("Game").transform.Find("UICamera").transform.Find("FistGameCanvas").transform.Find("NameInputField").GetComponent<InputField>().text = "";
+        } else {
+            GameObject.Find("Game").transform.Find("UICamera").transform.Find("FistGameCanvas").transform.Find("NameInputField").transform.Find("Placeholder").GetComponent<Text>().text = "名字不能超过8位";
+            GameObject.Find("Game").transform.Find("UICamera").transform.Find("FistGameCanvas").transform.Find("NameInputField").GetComponent<InputField>().text = "";
+        }
+    }
     /************************
      *不对外开放的函数
      *
@@ -343,13 +387,13 @@ public class MainGame : MonoBehaviour {
 
         //文本相关
         textEvent = GameObject.Find("Game").transform.Find("GameGraphics").transform.Find("NoticeCanvas").transform.Find("Notice").transform.GetComponent<TextEvent>();
-        this.textDoc.gameObject.SetActive(false);
-        this.statusPanel.gameObject.SetActive(false);
         this.textOfStatusPanel = this.statusPanel.GetComponentInChildren<Text>();
 
         //摄像头相关
+        gameCanvas = this.transform.Find("GameGraphics").transform.Find("UICanvas").GetComponent<Canvas>();
         gameCamera = this.transform.Find("GameCamera").GetComponent<Camera>();
         fightCamera = this.transform.Find("GameFight").transform.Find("FightCamera").GetComponent<Camera>();
+        uiCamera = this.transform.Find("UICamera").GetComponent<Camera>();
 
         //战斗相关
         this.myNpc = npc.GetComponent<GameNpc>();
@@ -361,11 +405,46 @@ public class MainGame : MonoBehaviour {
         this.enemySpeed = status.transform.Find("EnemySpeed").gameObject;
         this.ziji = fightZiji.GetComponent<AnimatorNormalFightAnimator>();
         this.diren = fightDiren.GetComponent<AnimatorNormalFightAnimator>();
-    }
 
+        //数据相关
+        this.data = new GameData(this, myNpc);
+
+        //开始界面
+
+        this.textDoc.gameObject.SetActive(false);
+        this.statusPanel.gameObject.SetActive(false);
+        uiCamera.gameObject.SetActive(false);
+		gameCanvas.gameObject.SetActive (false);
+		gameCamera.gameObject.SetActive (false);
+		fightCamera.gameObject.SetActive (false);
+        textEvent.setNotice("任意键继续", 100f, true);
+
+        
+        //PlayerPrefs.SetInt("nowId", 0);
+        //PlayerPrefs.SetInt("AllIdCount", 0);
+	}
+
+    void Update() {
+        fpsTime += Time.deltaTime;
+        fps++;
+        if (fpsTime >= 1f) {
+            fpsTime = 0;
+            fpsText.text = fps.ToString();
+            fps = 0;
+        }
+    }
     //更新函数
     void FixedUpdate() {
-
+        if (Input.anyKey && !isStart) {
+            isStart = true;
+            data.init();
+            gameStart();
+        }
+        this.autoSaveTime += Time.fixedDeltaTime;
+        if (this.autoSaveTime >= this.autoSaveMaxTime) {
+            this.autoSaveTime = 0;
+            LoadAndSave.saveNpc(myNpc, myNpc.id);
+        }
         /*******************
          *更新战斗相关
          *
@@ -414,7 +493,9 @@ public class MainGame : MonoBehaviour {
          *
          *
          *******************/
-        xuanXiangTime += Time.fixedDeltaTime;
+        if (xuanXiangTime < 1000f) {
+            xuanXiangTime += Time.fixedDeltaTime;
+        }
         if (this.mode != MainGame.MODE_MOVE) {
             buttonList.get(choseXuanXiang).GetComponent<Button>().Select();
         }
@@ -571,7 +652,7 @@ public class MainGame : MonoBehaviour {
                     }
                 } else if (cutPoint > 0) {
                     setButton(buttonEvent, --cutPoint);
-                    choseXuanXiang = 4;
+                    choseXuanXiang = buttonNumber-1;
                 }
                 break;
         }
@@ -590,7 +671,7 @@ public class MainGame : MonoBehaviour {
                     if (obj != null && !obj.Equals(default(GameObject))) {
                         buttonList.get(++choseXuanXiang).GetComponent<Button>().Select();
                     }
-                }else if(cutPoint<(int)(buttonCount/5)){
+                } else if (cutPoint < (int)(buttonCount / buttonNumber)) {
                     setButton(buttonEvent, ++cutPoint);
                 }
                 break;
@@ -621,7 +702,7 @@ public class MainGame : MonoBehaviour {
                 moveNpc(Move.MOVEMODE_RIGHT);
                 break;
             case MODE_XUANXIANG:
-                if (cutPoint < (int)(buttonCount / 5)) {
+                if (cutPoint < (int)(buttonCount / buttonNumber)) {
                     cutPoint++;
                     setButton(buttonEvent, cutPoint);
                 }
@@ -708,23 +789,28 @@ public class MainGame : MonoBehaviour {
     }
     //进行战斗时调用
     private void keyEventOfFight() {
-        GameObject obj = buttonList.get(choseXuanXiang);
-        if (obj != null && !obj.Equals(default(GameObject))) {
-            if (myNpc.isCanFight) {
-                myNpc.speedTime = 0;
-                textEvent.setNotice(obj.GetComponent<XuanXiangEvent>().getGameEvent().conText, 0.4f, true);
-            } else {
-                textEvent.setNotice("你现在还不能释放技能", 0.4f, true);
+        if (xuanXiangTime <= 0.2f) {
+            textEvent.setNotice("你点的太快了,休息一会吧！", 0.4f, Color.black);
+        } else {
+            xuanXiangTime = 0;
+            GameObject obj = buttonList.get(choseXuanXiang);
+            if (obj != null && !obj.Equals(default(GameObject))) {
+                if (myNpc.isCanFight) {
+                    myNpc.speedTime = 0;
+                    textEvent.setNotice(obj.GetComponent<XuanXiangEvent>().getGameEvent().conText, 0.4f, true);
+                } else {
+                    textEvent.setNotice("你现在还不能释放技能", 0.4f, true);
+                }
             }
         }
     }
 
     //进行场景对话时调用
     private void keyEventOfXuanXiang() {
-        if (xuanXiangTime <= 0.2f && lastChoseXuanXiang != choseXuanXiang) {
+        if (xuanXiangTime <= 0.2f) {
             textEvent.setNotice("你点的太快了！", 0.75f, Color.black);
-            backMove();
         } else {
+            xuanXiangTime = 0;
             if (lastChoseXuanXiang != choseXuanXiang) {
                 lastChoseXuanXiang = choseXuanXiang;
             } else {
@@ -732,6 +818,7 @@ public class MainGame : MonoBehaviour {
                 if (obj != null && !obj.Equals(default(GameObject))) {
                     textEvent.setNotice(obj.GetComponent<XuanXiangEvent>().getGameEvent().conText, 0.85f, false);
                 }
+                backMove();
             }
         }
     }
@@ -742,7 +829,7 @@ public class MainGame : MonoBehaviour {
         Vector3 pos;
         XuanXiangEvent xxEvent;
         int n = 0;
-        for (int i = cutPoint*5; i < gameEvent.Length && n < 5; i++) {
+        for (int i = cutPoint * buttonNumber; i < gameEvent.Length && n < buttonNumber; i++) {
             if (!gameEvent[i].isCanShow) {
                 continue;
             }
@@ -752,12 +839,12 @@ public class MainGame : MonoBehaviour {
             RectTransform rectRra = obj.GetComponent<RectTransform>();
             pos = Vector3.zero;
             pos.x = 0f;
-            pos.y = 100f - n * 50;
+            pos.y = 145f - n * 60;
             pos.z = 0f;
             rectRra.anchoredPosition3D = pos;
             rectRra.localScale = Vector3.one;
             Text text = obj.GetComponentInChildren<Text>();
-            text.text = (n+cutPoint*5 + 1) + "." + gameEvent[i].buttonText;
+            text.text = (n + cutPoint * buttonNumber + 1) + "." + gameEvent[i].buttonText;
             xxEvent = obj.GetComponent<XuanXiangEvent>();
             xxEvent.setGameEvent(gameEvent[i]);
             buttonList.add(obj);
@@ -769,6 +856,13 @@ public class MainGame : MonoBehaviour {
         lastChoseXuanXiang = -1;
     }
 
+    //开始游戏
+    private void gameStart(){
+		gameCanvas.gameObject.SetActive (true);
+		gameCamera.gameObject.SetActive (true);
+		fightCamera.gameObject.SetActive (false);
+        textEvent.setNotice("任意键继续", 0.1f, true);
+	}
     /******************************
 	 *封装函数
 	 *

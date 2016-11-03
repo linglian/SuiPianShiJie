@@ -11,9 +11,21 @@ public class TalkGetNormalAttackEvent: TalkEvent {
     }
 
     override public void runEvent() {
-        getNpc().gameObject.AddComponent<FightNormalAttack>();
+        bool isCanStudy = true;
+        FightEvent[] f = getNpc().GetComponents<FightEvent>();
+        for (int i = 0; i < f.Length; i++) {
+            if (f[i].id == 1) {
+                isCanStudy = false;
+                break;
+            }
+        }
+        if (isCanStudy) {
+            getNpc().gameObject.AddComponent<FightNormalAttack>();
+            this.setNotice("恭喜！\n学会了普通攻击", 1f, true);
+        } else {
+            this.setNotice("小伙子！\n你学过普通攻击吧...", 1f, true);
+        }
         this.isCanShow = false;
-        this.setNotice("恭喜！\n学会了普通攻击", 1f, true);
         backMove();
     }
 }

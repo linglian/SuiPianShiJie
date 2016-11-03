@@ -13,6 +13,8 @@ public class GameNpc : MonoBehaviour {
 	Vector3 hpVector;
 
 	//基础属性
+    public int id;//id,由系统生成
+    public string npcName;//姓名，玩家自己填写
 	public float hp;//生命
 	public float maxHp = 10f;//最大生命
 	public float mp;//法力
@@ -171,6 +173,7 @@ public class GameNpc : MonoBehaviour {
             this.hp = this.maxHp;
         }
     }
+
 	/************************
 	* 封装函数
 	* 

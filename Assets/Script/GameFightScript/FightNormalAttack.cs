@@ -2,9 +2,9 @@
 using System.Collections;
 
 public class FightNormalAttack : FightEvent {
-
 	void Start () {
         if (isDefined) {
+            this.id = 1;
             this.buttonText = "普通攻击";
             this.conText = "很普通的一击";
         }

@@ -3,7 +3,6 @@ using System.Collections;
 
 public class AutoMove : MonoBehaviour {
     public float dieTime = 0.5f;
-    public float posXSpeed = 0.1f;
     public float posYSpeed = 0.1f;
     RectTransform rectRra;
     Vector3 pos;
@@ -17,6 +16,8 @@ public class AutoMove : MonoBehaviour {
      *
      ******************************/
     public void startMove(float time) {
+        this.rectRra = this.GetComponent<RectTransform>();
+        this.pos = rectRra.anchoredPosition3D;
         this.delTime = time;
         this.time = 0;
         this.isStart = true;
@@ -26,18 +27,11 @@ public class AutoMove : MonoBehaviour {
      *
      *
      ******************************/
-	// Use this for initialization
-	void Start () {
-        this.rectRra = this.GetComponent<RectTransform>();
-        this.pos = this.transform.position;
-	}
 
-    // Update is called once per frame
     void Update() {
         if (isStart) {
             time += Time.deltaTime;
             if (time >= delTime) {
-                pos.x += posXSpeed * Time.deltaTime;
                 pos.y += posYSpeed * Time.deltaTime;
                 rectRra.anchoredPosition3D = pos;
             }
