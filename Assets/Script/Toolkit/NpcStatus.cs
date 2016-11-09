@@ -24,8 +24,8 @@ public class NpcStatus {
             + "<color=" + ColorToHex.colorToHex(color) + ">" + npc.hp + "</color>" + "/" + npc.maxHp + "    ";
         //MP
         color.r = 1f - npc.mp / npc.maxMp;
-        color.g = npc.mp / npc.maxMp;
-        color.b = 0f;
+        color.b = npc.mp / npc.maxMp;
+        color.g = 0f;
         str += " MP :"
             + "<color=" + ColorToHex.colorToHex(color) + ">" + npc.mp + "</color>" + "/" + npc.maxMp + "\n";
         //物理攻击

@@ -3,15 +3,15 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class GameEmptyObject : MonoBehaviour {
-    
+
     public string ObjectName;//名字
-    public string []introduce;//简介
+    [SerializeField, MultilineAttribute(5)]
+    public string introduce;//简介
 
     void OnCollisionEnter2D(Collision2D other) {
         GameObject.Find("Game").GetComponent<MainGame>().setNowObject(this);
-        CollisionEvent();
+        collisionEvent();
     }
-
     void OnCollisionExit2D(Collision2D other) {
         GameObject.Find("Game").GetComponent<MainGame>().closeNowObject();
     }
@@ -21,7 +21,7 @@ public class GameEmptyObject : MonoBehaviour {
      *
      *
      ******************************/
-    public virtual void CollisionEvent() {
+    public virtual void collisionEvent() {
 
     }
 }

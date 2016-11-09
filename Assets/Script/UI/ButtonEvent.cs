@@ -10,7 +10,9 @@ public class ButtonEvent : GameEmptyObject {
 		mainGame = GameObject.Find ("Game").GetComponent<MainGame> ();
 	}
 
-    public override void CollisionEvent() {
-        mainGame.setButton(gameEvent);
+    public override void collisionEvent() {
+        if (this.transform.GetComponent<GameNpc>().mode == MainGame.MODE_MOVE) {
+            mainGame.setButton(gameEvent);
+        }
     }
 }

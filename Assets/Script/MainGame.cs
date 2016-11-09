@@ -49,15 +49,15 @@ public class MainGame : MonoBehaviour {
     public GameObject textKuangMove;
     public GameObject textDoc;//介绍
     public GameObject statusPanel;//角色面板
+    public GameObject backpackPanel;//背包面板
     private Text textOfStatusPanel;//角色面板
     private bool isShowStatusPanel = false;
+    private bool isShowBackpackPanel = false;
     private bool isTextDoc = false;
     private TextEvent textEvent;
 
     //战斗相关
     public GameObject status;
-    public GameObject fightZiji;
-    public GameObject fightDiren;
     private GameNpc enemyNpc;
     private GameNpc myNpc;
     private GameObject myHp;
@@ -66,8 +66,6 @@ public class MainGame : MonoBehaviour {
     private GameObject enemyHp;
     private GameObject enemyMp;
     private GameObject enemySpeed;
-    private AnimatorNormalFightAnimator ziji;
-    private AnimatorNormalFightAnimator diren;
 
     //静态常量
     public const int MODE_MOVE = 0;
@@ -83,6 +81,7 @@ public class MainGame : MonoBehaviour {
     public const int KEY_NO = 5;
     public const int KEY_STATUSPANEL = 6;
     public const int KEY_BACKPACK = 7;
+    public const int KEY_CENTER = 8;
 
     /******************************
      *对外开放的接口
@@ -100,17 +99,32 @@ public class MainGame : MonoBehaviour {
         if (this.mode != MainGame.MODE_FIGHT) {
             destroyButton();
             string str;
-            str = nowObject.ObjectName + "\n";
-            str += "----------" + "\n";
-            for (int i = 0; i < nowObject.introduce.Length; i++) {
-                str += nowObject.introduce[i] + "\n";
+            GameNpc tempNpc = nowObject.GetComponent<GameNpc>();
+            str = nowObject.ObjectName;
+            if (tempNpc == null) {
+                str += '\n';
+            } else {
+                Color color = Color.black;
+                str += "(<color=#FFFF00>" + tempNpc.lvl + "</color>";
+                //HP
+                color.r = 1f - tempNpc.hp / tempNpc.maxHp;
+                color.g = tempNpc.hp / tempNpc.maxHp;
+                color.b = 0f;
+                str += "<color=" + ColorToHex.colorToHex(color) + ">" + tempNpc.hp + "</color>" + "/" + tempNpc.maxHp + " ";
+                //MP
+                color.r = 1f - tempNpc.mp / tempNpc.maxMp;
+                color.b = tempNpc.mp / tempNpc.maxMp;
+                color.g = 0f;
+                str += "<color=" + ColorToHex.colorToHex(color) + ">" + tempNpc.mp + "</color>" + "/" + tempNpc.maxMp + " ";
+                str += "<color=#FF00FF>" + tempNpc.getFightPower() + "</color>)\n";
             }
-            this.mode = MainGame.MODE_MOVE;
+            str += "--------------\n";
+            str += nowObject.introduce + "\n";
             setText(str);
+            this.mode = MainGame.MODE_MOVE;
         }
     }
-
-    //Button接口-用于直接点击Button时触发
+                //Button接口-用于直接点击Button时触发
     public void keyDownButton(GameObject gameObj) {
         choseXuanXiang = buttonList.find(gameObj);
         if (choseXuanXiang == -1) {
@@ -152,6 +166,9 @@ public class MainGame : MonoBehaviour {
                 break;
             case KEY_BACKPACK:
                 KeyBackPackEvent();
+                break;
+            case KEY_CENTER:
+                KeyCenterEvent();
                 break;
         }
     }
@@ -264,15 +281,20 @@ public class MainGame : MonoBehaviour {
         functionButton.transform.Find("StatusPanel").gameObject.SetActive(false);
         functionButton.transform.Find("BackPack").gameObject.SetActive(false);
         this.statusPanel.gameObject.SetActive(false);
+        this.backpackPanel.gameObject.SetActive(false);
+        enemyNpc.transform.SetParent(GameObject.Find("Game").transform.Find("GameFight").transform);
+        myNpc.transform.SetParent(GameObject.Find("Game").transform.Find("GameFight").transform);
+        myNpc.mode = MainGame.MODE_FIGHT;
+        enemyNpc.mode = MainGame.MODE_FIGHT;
+        enemyNpc.enemyNpc = myNpc;
+        myNpc.enemyNpc = enemyNpc;
         Vector3 pos = Vector3.zero;
-        pos.x = 2.5f;
-        pos.y = 0.5f;
-        ziji.transform.localPosition = pos;
-        ziji.GetComponent<Rigidbody>().mass = myNpc.lvl+myNpc.liliang;
-        pos.x = -2.5f;
-        pos.y = 0.5f;
-        diren.transform.localPosition = pos;
-        diren.GetComponent<Rigidbody>().mass = myNpc.lvl + myNpc.liliang;
+        pos.x = 5f;
+        pos.y = 0;
+        enemyNpc.moveToPosOfParent(pos);
+        pos.x = -5f;
+        pos.y = 0;
+        myNpc.moveToPosOfParent(pos);
         changeMode(MainGame.MODE_FIGHT);
     }
 
@@ -295,9 +317,28 @@ public class MainGame : MonoBehaviour {
             winer.hp = winer.maxHp;
             winer.mp = winer.maxMp;
         }
-        int n = winer.addExp(loser.exp * (loser.extraExpOdds / 100f + 1f));
+        winer.isCanFight = false;
+        winer.speedTime = 0;
+        this.enemyNpc = null;
+        functionButton.transform.Find("StatusPanel").gameObject.SetActive(true);
+        functionButton.transform.Find("BackPack").gameObject.SetActive(true);
+        if (isShowStatusPanel) {
+            this.statusPanel.gameObject.SetActive(true);
+        } else if (isShowBackpackPanel) {
+            this.backpackPanel.gameObject.SetActive(true);
+        }
+        winer.transform.SetParent(GameObject.Find("Game").transform.Find("GameNpc").transform);
+        loser.transform.SetParent(GameObject.Find("Game").transform.Find("GameNpc").transform);
+        winer.backLastPos();
+        loser.backLastPos();
+        winer.mode = MainGame.MODE_MOVE;
+        loser.mode = MainGame.MODE_MOVE;
+        changeMode(MainGame.MODE_MOVE);
+        setTextMove("经验+" + loser.exp *(loser.dropExpOdds/100f+1f)* (winer.extraExpOdds / 100f + 1f), 0.3f, winer.gameObject);
+        setTextMove("金钱+" + loser.money * (loser.dropMoneyOdds / 100f + 1f) * (winer.extraMoneyOdds / 100f + 1f), 0.3f, winer.gameObject);
+        winer.addMoney(loser.money * (loser.dropMoneyOdds / 100f + 1f) * (winer.extraMoneyOdds / 100f + 1f));
+        int n = winer.addExp(loser.exp * (loser.dropExpOdds / 100f + 1f) * (winer.extraExpOdds / 100f + 1f));
         if (n > 0) {
-            setTextMove("经验+" + loser.exp * (loser.extraExpOdds / 100f + 1f), 0.3f, loser.gameObject);
             setTextMove("等级+" + n, 0.3f, winer.gameObject);
             setTextMove("最大生命" + n * 5, 0.6f, winer.gameObject);
             setTextMove("最大法力" + n * 3, 0.9f, winer.gameObject);
@@ -306,32 +347,8 @@ public class MainGame : MonoBehaviour {
             setTextMove("魔法攻击上限" + n * 1.2, 1.8f, winer.gameObject);
             setTextMove("魔法攻击下限" + n * 0.6, 2.1f, winer.gameObject);
         }
-        winer.isCanFight = false;
-        winer.speedTime = 0;
-        this.enemyNpc = null;
-        functionButton.transform.Find("StatusPanel").gameObject.SetActive(true);
-        functionButton.transform.Find("BackPack").gameObject.SetActive(true);
-        if (isShowStatusPanel) {
-            this.statusPanel.gameObject.SetActive(true);
-        }
-        changeMode(MainGame.MODE_MOVE);
     }
 
-    //普通攻击
-    public void normalAttack() {
-        if (myNpc.isCanFight) {
-            ziji.startFight(myNpc, enemyNpc);
-            ziji.runEvent();
-        }
-    }
-
-    //获取战斗双方
-    public GameNpc getEnemyNpc() {
-        return this.enemyNpc;
-    }
-    public GameNpc getMyNpc() {
-        return this.myNpc;
-    }
 
     //第一次游戏
     public void firstBegin() {
@@ -340,17 +357,20 @@ public class MainGame : MonoBehaviour {
 
     //设置名字，并保存
     public void setNewPlayer(string name) {
-        if (TextCheck.isUserName(name)&&name.Length<=8) {
+        if (name.Length!=0&&TextCheck.isUserName(name)&&name.Length<=8) {
         data.nowId = data.allIdCount++ + 1;
         PlayerPrefs.SetInt("nowId", data.nowId);
         PlayerPrefs.SetInt("AllIDCount", data.allIdCount);
         myNpc.npcName = name;
         LoadAndSave.saveNpc(myNpc, data.nowId);
         this.uiCamera.gameObject.SetActive(false);
+        } else if (name.Length == 0) {
+            GameObject.Find("Game").transform.Find("UICamera").transform.Find("FistGameCanvas").transform.Find("NameInputField").transform.Find("Placeholder").GetComponent<Text>().text = "名字不能为空";
+            GameObject.Find("Game").transform.Find("UICamera").transform.Find("FistGameCanvas").transform.Find("NameInputField").GetComponent<InputField>().text = "";
         } else if (name.Length <= 8) {
             GameObject.Find("Game").transform.Find("UICamera").transform.Find("FistGameCanvas").transform.Find("NameInputField").transform.Find("Placeholder").GetComponent<Text>().text = "名字里不能带字符";
             GameObject.Find("Game").transform.Find("UICamera").transform.Find("FistGameCanvas").transform.Find("NameInputField").GetComponent<InputField>().text = "";
-        } else {
+        }else {
             GameObject.Find("Game").transform.Find("UICamera").transform.Find("FistGameCanvas").transform.Find("NameInputField").transform.Find("Placeholder").GetComponent<Text>().text = "名字不能超过8位";
             GameObject.Find("Game").transform.Find("UICamera").transform.Find("FistGameCanvas").transform.Find("NameInputField").GetComponent<InputField>().text = "";
         }
@@ -369,18 +389,6 @@ public class MainGame : MonoBehaviour {
     //初始化函数，系统自动调用
     void Start() {
         buttonList = new LinkedList<GameObject>();
-        //初始化地图信息
-        GameObject obj;
-        Vector3 pos = Vector3.zero;
-        for (int i = -Width / 2; i < Width / 2; i++) {
-            for (int j = -Height / 2; j < Height / 2; j++) {
-                pos.x = i * 1.6f;
-                pos.y = j * 1.6f;
-                obj = (GameObject)Instantiate(floor, pos, Quaternion.identity);
-                obj.transform.SetParent(this.transform.Find("GameFloor").transform);
-            }
-        }
-
         //初始化移动相关
         ani = npc.transform.GetComponent<Animator>();
         move = npc.transform.GetComponent<Move>();
@@ -403,8 +411,6 @@ public class MainGame : MonoBehaviour {
         this.enemyHp = status.transform.Find("EnemyHp").gameObject;
         this.enemyMp = status.transform.Find("EnemyMp").gameObject;
         this.enemySpeed = status.transform.Find("EnemySpeed").gameObject;
-        this.ziji = fightZiji.GetComponent<AnimatorNormalFightAnimator>();
-        this.diren = fightDiren.GetComponent<AnimatorNormalFightAnimator>();
 
         //数据相关
         this.data = new GameData(this, myNpc);
@@ -413,15 +419,15 @@ public class MainGame : MonoBehaviour {
 
         this.textDoc.gameObject.SetActive(false);
         this.statusPanel.gameObject.SetActive(false);
+        this.backpackPanel.gameObject.SetActive(false);
         uiCamera.gameObject.SetActive(false);
 		gameCanvas.gameObject.SetActive (false);
 		gameCamera.gameObject.SetActive (false);
-		fightCamera.gameObject.SetActive (false);
+        fightCamera.gameObject.SetActive(false);
         textEvent.setNotice("任意键继续", 100f, true);
 
-        
-        //PlayerPrefs.SetInt("nowId", 0);
-        //PlayerPrefs.SetInt("AllIdCount", 0);
+        PlayerPrefs.SetInt("nowId", 0);
+        PlayerPrefs.SetInt("AllIdCount", 0);
 	}
 
     void Update() {
@@ -440,10 +446,12 @@ public class MainGame : MonoBehaviour {
             data.init();
             gameStart();
         }
-        this.autoSaveTime += Time.fixedDeltaTime;
-        if (this.autoSaveTime >= this.autoSaveMaxTime) {
-            this.autoSaveTime = 0;
-            LoadAndSave.saveNpc(myNpc, myNpc.id);
+        if (this.mode != MainGame.MODE_FIGHT) {
+            this.autoSaveTime += Time.fixedDeltaTime;
+            if (this.autoSaveTime >= this.autoSaveMaxTime) {
+                this.autoSaveTime = 0;
+                LoadAndSave.saveNpc(myNpc, myNpc.id);
+            }
         }
         /*******************
          *更新战斗相关
@@ -465,7 +473,7 @@ public class MainGame : MonoBehaviour {
             } else {
                 enemyNpc.isCanFight = false;
             }
-            fightNpcAI(enemyNpc);
+            fightNpcAI(enemyNpc,myNpc);
             switch (updateNpcStatus()) {
                 case 0:
                     break;
@@ -502,11 +510,11 @@ public class MainGame : MonoBehaviour {
     }
 
     //电脑AI,战斗时
-    private void fightNpcAI(GameNpc tNpc) {
+    private void fightNpcAI(GameNpc tNpc, GameNpc tNpc2) {
         if (tNpc.isCanFight) {
             tNpc.speedTime = 0;
-            diren.startFight(enemyNpc, myNpc);
-            diren.runEvent();
+            FightEvent[] fight = tNpc.GetComponents<FightEvent>();
+            fight[(int)Random.Range(0, fight.Length)].runEvent();
         }
     }
 
@@ -575,7 +583,9 @@ public class MainGame : MonoBehaviour {
                 break;
             case MainGame.MODE_FIGHT:
                 switch (this.mode) {
-                    case MODE_MOVE:
+                    case MainGame.MODE_MOVE:
+                    case MainGame.MODE_DUIHUA:
+                    case MainGame.MODE_XUANXIANG:
                         this.gameCamera.gameObject.SetActive(false);
                         break;
                 }
@@ -609,6 +619,7 @@ public class MainGame : MonoBehaviour {
         while (buttonList.count != 0) {
             Destroy(buttonList.pop());
         }
+        startText();
     }
 
     //移动所控制的npc
@@ -718,7 +729,7 @@ public class MainGame : MonoBehaviour {
         switch (this.mode) {
             case MODE_MOVE:
                 if (this.nowObject != null) {
-                    this.nowObject.CollisionEvent();
+                    this.nowObject.collisionEvent();
                     closeText();
                 }
                 break;
@@ -745,6 +756,17 @@ public class MainGame : MonoBehaviour {
         }
     }
 
+    //CENTER按键的事件
+    private void KeyCenterEvent() {
+        switch (this.mode) {
+            case MODE_MOVE:
+                moveNpc(-1);
+                break;
+            case MODE_XUANXIANG:
+                KeyYesEvent();
+                break;
+        }
+    }
     //StatusPanel按键的事件
     private void KeyStatusPanelEvent() {
         switch (this.mode) {
@@ -754,7 +776,7 @@ public class MainGame : MonoBehaviour {
                 if (isShowStatusPanel) {
                     closeStatusPanel();
                 } else {
-                    showStatusPanel(this.myNpc);
+                    showStatusPanel();
                 }
                 break;
         }
@@ -763,18 +785,34 @@ public class MainGame : MonoBehaviour {
     private void KeyBackPackEvent() {
         switch (this.mode) {
             case MODE_MOVE:
-
-                break;
             case MODE_XUANXIANG:
-
-                break;
             case MODE_FIGHT:
-
+                if (isShowBackpackPanel) {
+                    closeBackpackPanel();
+                } else {
+                    showBackpackPanel();
+                }
                 break;
         }
     }
+    //显示物品详细信息
+    private void showBackpackPanel() {
+        if (isShowStatusPanel) {
+            closeStatusPanel();
+        }
+        this.backpackPanel.gameObject.SetActive(true);
+        isShowBackpackPanel = true;
+    }
+    //关闭物品详细信息
+    private void closeBackpackPanel() {
+        this.backpackPanel.gameObject.SetActive(false);
+        isShowBackpackPanel = false;
+    }
     //显示玩家详细信息
-    private void showStatusPanel(GameNpc npc) {
+    private void showStatusPanel() {
+        if (isShowBackpackPanel) {
+            closeBackpackPanel();
+        }
         this.statusPanel.gameObject.SetActive(true);
         isShowStatusPanel = true;
     }
@@ -860,8 +898,8 @@ public class MainGame : MonoBehaviour {
     private void gameStart(){
 		gameCanvas.gameObject.SetActive (true);
 		gameCamera.gameObject.SetActive (true);
-		fightCamera.gameObject.SetActive (false);
-        textEvent.setNotice("任意键继续", 0.1f, true);
+        fightCamera.gameObject.SetActive(false);
+        textEvent.setNotice("英雄！欢迎你！", 1.5f, true);
 	}
     /******************************
 	 *封装函数
@@ -875,5 +913,16 @@ public class MainGame : MonoBehaviour {
     public int getMode() {
         return mode;
     }
+    //获取战斗双方
+    public GameNpc getEnemyNpc() {
+        return this.enemyNpc;
+    }
+    public GameNpc getMyNpc() {
+        return this.myNpc;
+    }
+    public TextEvent getTextEvent() {
+        return textEvent;
+    }
+
 
 }

@@ -12,10 +12,10 @@ public class XuanXiangEvent : MonoBehaviour {
 	}
 
 	public void OnClickListener(){
-		if (gameEvent!=null) {
-			gameEvent.runEvent ();
-			GameObject.Find ("Game").GetComponent<MainGame> ().keyDownButton(this.gameObject);
-		}
+            if (gameEvent != null) {
+                gameEvent.runEvent();
+                GameObject.Find("Game").GetComponent<MainGame>().keyDownButton(this.gameObject);
+            }
 	}
 
 	public void setGameEvent(GameEvent gameEvent){

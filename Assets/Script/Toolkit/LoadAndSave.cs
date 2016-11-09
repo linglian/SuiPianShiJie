@@ -10,6 +10,9 @@ public class LoadAndSave : MonoBehaviour {
      *
      ******************************/
     public static int saveNpc(GameNpc npc, int id) {
+        if (npc == null) {
+            return 0;
+        }
         string sId = id.ToString();
         //存储基本信息
         PlayerPrefs.SetInt(sId + "_id", id);
@@ -71,6 +74,9 @@ public class LoadAndSave : MonoBehaviour {
     }
 
     public static int loadNpc(GameNpc npc, int id) {
+        if (npc == null) {
+            return 0;
+        }
         string sId = id.ToString();
         //读取基本信息
         npc.id = PlayerPrefs.GetInt(sId + "_id");

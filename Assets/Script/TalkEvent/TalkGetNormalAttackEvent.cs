@@ -14,7 +14,7 @@ public class TalkGetNormalAttackEvent: TalkEvent {
         bool isCanStudy = true;
         FightEvent[] f = getNpc().GetComponents<FightEvent>();
         for (int i = 0; i < f.Length; i++) {
-            if (f[i].id == 1) {
+            if (f[i].id == 2) {//在这里写技能的id
                 isCanStudy = false;
                 break;
             }

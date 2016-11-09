@@ -1,10 +1,12 @@
 fileFormatVersion: 2
 guid: 3f0cca7388cdfe445b9ce9e4accd29a3
-timeCreated: 1477489958
+timeCreated: 1478487515
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - skillPerfabs: {fileID: 1000012621718448, guid: 78f69a1438ea4f042b64b1456baaecdf,
+      type: 2}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

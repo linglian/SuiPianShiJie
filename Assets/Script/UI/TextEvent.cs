@@ -54,7 +54,7 @@ public class TextEvent : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start() {
+    void Awake() {
         aliveTime = 0;
         text = this.transform.GetComponent<Text>();
         textChange = this.transform.GetComponent<TextChangeColor>();

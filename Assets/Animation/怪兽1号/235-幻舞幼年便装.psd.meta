@@ -1,0 +1,349 @@
+fileFormatVersion: 2
+guid: 4c6d401a2a2207f4c8000092fa5ab553
+timeCreated: 1478690761
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_0"
+    21300002: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_1"
+    21300004: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_2"
+    21300006: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_3"
+    21300008: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_4"
+    21300010: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_5"
+    21300012: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_6"
+    21300014: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_7"
+    21300016: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_8"
+    21300018: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_9"
+    21300020: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_10"
+    21300022: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_11"
+    21300024: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_12"
+    21300026: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_13"
+    21300028: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_14"
+    21300030: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_15"
+    21300032: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_16"
+    21300034: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_17"
+    21300036: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_18"
+    21300038: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_19"
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: 0
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  buildTargetSettings:
+  - buildTarget: iPhone
+    maxTextureSize: 2048
+    textureFormat: -3
+    compressionQuality: 100
+    allowsAlphaSplitting: 0
+  - buildTarget: Android
+    maxTextureSize: 2048
+    textureFormat: -3
+    compressionQuality: 100
+    allowsAlphaSplitting: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_0"
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 190
+        width: 23
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_1"
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 190
+        width: 22
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_2"
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 190
+        width: 23
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_3"
+      rect:
+        serializedVersion: 2
+        x: 101
+        y: 190
+        width: 22
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_4"
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 142
+        width: 20
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_5"
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 142
+        width: 21
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_6"
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 142
+        width: 20
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_7"
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 142
+        width: 19
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_8"
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 94
+        width: 20
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_9"
+      rect:
+        serializedVersion: 2
+        x: 37
+        y: 93
+        width: 21
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_10"
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 94
+        width: 20
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_11"
+      rect:
+        serializedVersion: 2
+        x: 103
+        y: 94
+        width: 19
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_12"
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 46
+        width: 23
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_13"
+      rect:
+        serializedVersion: 2
+        x: 38
+        y: 46
+        width: 21
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_14"
+      rect:
+        serializedVersion: 2
+        x: 69
+        y: 46
+        width: 23
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_15"
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 46
+        width: 21
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_16"
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 0
+        width: 23
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_17"
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 0
+        width: 23
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_18"
+      rect:
+        serializedVersion: 2
+        x: 60
+        y: 0
+        width: 23
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: "235-\u5E7B\u821E\u5E7C\u5E74\u4FBF\u88C5_19"
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 0
+        width: 23
+        height: 41
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

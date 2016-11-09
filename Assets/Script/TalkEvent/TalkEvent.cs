@@ -46,7 +46,7 @@ public class TalkEvent : GameEvent {
             if (mainGame.getMyNpc().GetComponent<FightEvent>() != null) {
                 mainGame.startFight(this.GetComponentInParent<GameNpc>());
             } else {
-                setNotice("你还没有学会任何技能，怎么战斗啊", 1.5f, true);
+                setNotice("你还没有学会任何技能，怎么战斗啊\n去新手接待员那里学习普通攻击吧！", 1.5f, true);
                 backMove();
             }
         }
